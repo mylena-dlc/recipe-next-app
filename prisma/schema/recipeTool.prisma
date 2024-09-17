@@ -1,0 +1,13 @@
+model RecipeTool {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    quantity Float
+    
+    toolId String @db.ObjectId
+    tool Tool @relation(fields: [toolId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+ 
+    recipeId String @db.ObjectId
+    recipe Recipe @relation(fields: [recipeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+ 
+    @@index([toolId])
+    @@index([recipeId])
+}

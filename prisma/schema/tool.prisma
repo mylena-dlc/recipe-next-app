@@ -1,0 +1,6 @@
+model Tool {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    nameTool String
+ 
+    recipes RecipeTool[] 
+}

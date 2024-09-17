@@ -2,7 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+body {
+  font-family: 'Avenir';
+  font-size: 20px;
+}
+
+.swiper-slide {
+  width: 20%;
+}
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -24,4 +32,4 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-}
+} */
