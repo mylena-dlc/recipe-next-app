@@ -6,11 +6,17 @@ model Recipe {
     preparationTime Int
     image String
     difficulty Int
+    isHealthy Boolean
+    isVegan Boolean
 
     categoryId String @db.ObjectId
     category Category @relation(fields: [categoryId], references: [id])
 
     tools RecipeTool[]
     ingredients RecipeIngredient[]
+    comments Comment[]
+    steps Step[]
+
+    @@index([categoryId])
 
 }

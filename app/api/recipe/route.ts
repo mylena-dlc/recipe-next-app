@@ -6,11 +6,12 @@ export async function GET() {
     try {
         // récupérer la liste des recettes
         const recipes = await db.recipe.findMany({
+            take: 10, // Limite à 10 recettes
             orderBy: {
             createdAt: 'desc'
             },
             include: {
-                // category: true,
+                category: true,
                 tools: {
                     include: {
                         tool: true

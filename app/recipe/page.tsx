@@ -45,7 +45,7 @@ const RecipePage = () => {
             >
                 {recipes.map((recipe) => (
 
-                    <SwiperSlide className='w-[20%]'>
+                    <SwiperSlide className='w-[20%]' key={recipe.id}>
                         <RecipeCard recipe={recipe} />
                     </SwiperSlide>
 

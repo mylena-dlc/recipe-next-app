@@ -1,6 +1,7 @@
 model Ingredient {
     id String @id @default(auto()) @map("_id") @db.ObjectId
     nameIngredient String
+    image String
  
     recipes RecipeIngredient[] 
 }

@@ -6,11 +6,12 @@ interface CategoryType {
 interface IngredientType {
     id: string;
     nameIngredient: string;
+    image: string;
 }
 
 interface RecipeIngredientType {
     id: string;
-    quantity: Number;
+    quantity: number;
     unity: string;
     ingredient: IngredientType; 
 }
@@ -18,11 +19,12 @@ interface RecipeIngredientType {
 interface ToolType {
     id: string;
     nameTool: string;
+    image: string;
 }
 
 interface RecipeToolType {
     id: string;
-    quantity: Number;
+    quantity: number;
     tool: ToolType; 
 }
 
@@ -35,6 +37,24 @@ interface Recipe {
     instructions: string;
     difficulty: number;
     category: CategoryType;
-    tools: RecipeToolType[]
-    ingredients: RecipeIngredientType[]
+    tools: RecipeToolType[];
+    ingredients: RecipeIngredientType[];
+    steps: StepType[];
+    isHealthy: boolean;
+    isVegan: boolean;
+    comments: CommentType[];
+}
+
+interface StepType {
+    id: string;
+    number: number;
+    text: string;
+    recipeId: string;
+}
+
+interface CommentType {
+    id: string;
+    text: string;
+    userId: string;
+    createdAt: Date;
 }
