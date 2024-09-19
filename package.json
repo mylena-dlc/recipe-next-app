@@ -2,9 +2,10 @@
   "name": "recipe-app",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "NEXT_PUBLIC_ESLINT_IGNORE_DURING_BUILD=true next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
