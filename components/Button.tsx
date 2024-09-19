@@ -1,6 +1,5 @@
 import React from 'react'
 import Link from 'next/link'
-import { LucideIcon } from 'lucide-react'
 
 interface ButtonProps {
   label: string;

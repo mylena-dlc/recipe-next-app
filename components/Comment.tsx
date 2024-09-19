@@ -1,6 +1,5 @@
 import React from 'react'
 import { formatDate } from '@/lib/utils'
-import { useRouter } from 'next/navigation'
 import { Trash2 } from 'lucide-react'
 
 
@@ -10,15 +9,13 @@ interface CommentProps {
 
 const Comment = ({ comment }: CommentProps) => {
 
-    const router = useRouter();
-
     const handleDelete = async () => {
 
         const confirmDelete = window.confirm('Are you sure you want to delete this comment?');
         if (!confirmDelete) return;
 
         try {
-            const res = await fetch(`/api/comment/${comment.id}/delete`, {
+            await fetch(`/api/comment/${comment.id}/delete`, {
                 method: 'DELETE'
             })
             // router.push('/comment')

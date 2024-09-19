@@ -7,7 +7,6 @@ import DifficultyRating from '@/components/DifficultyRating';
 import { Clock11, ListChecks, CookingPot, Waypoints, MessageSquareQuote, Lightbulb } from 'lucide-react';
 import Image from 'next/image';
 import Card from '@/components/Card';
-import Button from '@/components/Button';
 import Step from '@/components/Step';
 import Comment from '@/components/Comment';
 import AddComment from '@/components/AddComment';
@@ -20,14 +19,11 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
-import { Fragment } from 'react';
-
 
 
 const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const [relatedRecipes, setRelatedRecipes] = useState<Recipe[]>([]);
-    const [showIngredients, setShowIngredients] = useState(true); // État pour afficher les ingrédients ou les ustensiles
     const stepsCount = recipe ? recipe.steps.length : 0;
     const commentsCount = recipe ? recipe.comments.length : 0;
 
