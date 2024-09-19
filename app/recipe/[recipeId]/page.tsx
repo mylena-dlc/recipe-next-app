@@ -84,7 +84,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                 />
                                 <span className='inline-flex mr-5'>
                                     <Clock11 className='mr-2' />
-                                    {`${recipe.preparationTime} min`}
+                                    {recipe.preparationTime} min
                                 </span>
                                 <DifficultyRating difficulty={recipe.difficulty} />
                             </div>

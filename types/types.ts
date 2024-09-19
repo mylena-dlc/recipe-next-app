@@ -33,7 +33,7 @@ interface Recipe {
     nameRecipe: string;
     image: string;
     createdAt: Date;
-    preparationTime: Number;
+    preparationTime: number;
     instructions: string;
     difficulty: number;
     category: CategoryType;
