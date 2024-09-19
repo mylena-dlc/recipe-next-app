@@ -56,7 +56,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         <p className='text-xl pb-5 flex items-center'>
           <>
             <Clock11 className='mr-2' />
-            {recipe.preparationTime} min
+            {`${recipe.preparationTime} min`}
           </>
         </p>
 
