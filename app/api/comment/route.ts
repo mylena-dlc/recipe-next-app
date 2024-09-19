@@ -18,6 +18,7 @@ export async function POST(req: Request) {
         });
 
         return new NextResponse(JSON.stringify(newComment), { status: 201 });
+        
     } catch (error) {
         console.error("[COMMENT POST]", error);
         return new NextResponse('Internal Server Error', { status: 500 });

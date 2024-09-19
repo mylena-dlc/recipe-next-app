@@ -5,7 +5,7 @@ interface CardProps {
   image: string;
   alt: string;
   name: string;
-  quantity: number;
+  quantity?: number;
   unity?: string;
 }
 

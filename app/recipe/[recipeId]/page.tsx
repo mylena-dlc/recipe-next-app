@@ -11,17 +11,22 @@ import Button from '@/components/Button';
 import Step from '@/components/Step';
 import Comment from '@/components/Comment';
 import AddComment from '@/components/AddComment';
+import RecipeCard from '@/components/RecipeCard';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
-
-
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
+import { Fragment } from 'react';
+
+
+
 const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const [recipe, setRecipe] = useState<Recipe | null>(null);
+    const [relatedRecipes, setRelatedRecipes] = useState<Recipe[]>([]);
     const [showIngredients, setShowIngredients] = useState(true); // État pour afficher les ingrédients ou les ustensiles
     const stepsCount = recipe ? recipe.steps.length : 0;
     const commentsCount = recipe ? recipe.comments.length : 0;
@@ -31,7 +36,26 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
             const response = await fetch(`/api/recipe/${params.recipeId}`);
             const data: Recipe = await response.json();
             setRecipe(data);
-        };
+
+
+            // Récupérez les recettes de la même catégorie
+            if (data.category && data.category.id) {
+                const categoryResponse = await fetch(`/api/recipe/category/${data.category.id}`);
+                if (!categoryResponse.ok) throw new Error('Category recipes not found');
+
+                const categoryRecipes: Recipe[] = await categoryResponse.json();
+
+                // Filtre la recette actuelle
+                const filteredRecipes = categoryRecipes.filter(recipe => recipe.id !== data.id);
+
+                // Sélectionne 3 recettes aléatoires 
+                // sort(() => 0.5 - Math.random()): mélange aléatoirement les recettes du tableau
+                // slice(0, 3) : prend les 3 premières recettes du tableau
+                const randomRecipes = filteredRecipes.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+                setRelatedRecipes(randomRecipes);
+            };
+        }
         fetchRecipe();
     }, [params.recipeId]);
 
@@ -73,7 +97,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                             <Image
                                 src={recipe.image}
                                 fill // Utilise la propriété fill pour prendre toute la place du conteneur
-                                style={{ objectFit: 'cover' }} // Ajoute l'objet fit ici
+                                style={{ objectFit: 'cover' }}
                                 alt={recipe.nameRecipe}
                                 className='rounded-md'
                             />
@@ -95,50 +119,57 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                 icon={CookingPot}
                                 text="Ingrédients et Ustensiles"
                             />
-                            <div className='flex bg-slate-800 rounded-md p-2 mb-8'>
-                                <Button
-                                    label="Ingrédients"
-                                    href="#"
-                                    className={`hover:bg-gradient-to-tr from-[#e56d59] to-[#ea8869] uppercase font-bold w-auto ${showIngredients ? 'bg-gradient-to-tr from-[#e56d59] to-[#ea8869]' : 'bg-gray-300'}`}
-                                />
-                                <Button
-                                    label="Ustensiles"
-                                    href="#"
-                                    className={`hover:bg-gradient-to-tr from-[#e56d59] to-[#ea8869] uppercase font-bold w-auto ${!showIngredients ? 'bg-gradient-to-tr from-[#e56d59] to-[#ea8869]' : 'bg-gray-300'}`}
-
-                                />
-                            </div>
-
-
-                            {/*  Ingrédients */}
-                            <div className='grid grid-cols-1 sm:grid-cols-6 gap-4'>
-                                {recipe.ingredients.map((ingredient: RecipeIngredientType) => (
-                                    <Card
-                                        key={ingredient.id}
-                                        image={ingredient.ingredient.image}
-                                        alt={ingredient.ingredient.nameIngredient}
-                                        name={ingredient.ingredient.nameIngredient}
-                                        quantity={ingredient.quantity}
-                                        unity={ingredient.unity}
-                                    />
-                                ))}
-                            </div>
-
-                            {/*  Ustensiles */}
-                            <div className='grid grid-cols-1 sm:grid-cols-6 gap-4'>
-                                {recipe.tools.map((tool: RecipeToolType) => (
-                                    <Card
-                                        key={tool.id}
-                                        image={tool.tool.image}
-                                        alt={tool.tool.nameTool}
-                                        quantity={tool.quantity}
-                                        name={tool.tool.nameTool}
-                                    />
-                                ))}
-                            </div>
+                            <TabGroup>
+                                <TabList className='flex bg-slate-800 rounded-md p-2 mb-8 font-bold'>
+                                    <Tab
+                                        className={({ selected }) =>
+                                            `w-auto mr-4 p-2 uppercase rounded-md ${selected ? 'bg-gradient-to-tr from-[#e56d59] to-[#ea8869]' : 'text-white hover:bg-gradient-to-tr from-[#e56d59] to-[#ea8869]'}`
+                                        }
+                                    >
+                                        Ingrédients
+                                    </Tab>
+                                    <Tab
+                                        className={({ selected }) =>
+                                            `w-auto p-2 uppercase rounded-md ${selected ? 'bg-gradient-to-tr from-[#e56d59] to-[#ea8869]' : 'text-white hover:bg-gradient-to-tr from-[#e56d59] to-[#ea8869]'}`
+                                        }
+                                    >
+                                        Ustensiles
+                                    </Tab>
+                                </TabList>
+                                <TabPanels>
+                                    <TabPanel>
+                                        {/* Ingrédients */}
+                                        <div className='grid grid-cols-1 sm:grid-cols-6 gap-4'>
+                                            {recipe.ingredients.map((ingredient) => (
+                                                <Card
+                                                    key={ingredient.id}
+                                                    image={ingredient.ingredient.image}
+                                                    alt={ingredient.ingredient.nameIngredient}
+                                                    name={ingredient.ingredient.nameIngredient}
+                                                    quantity={ingredient.quantity}
+                                                    unity={ingredient.unity}
+                                                />
+                                            ))}
+                                        </div>
+                                    </TabPanel>
+                                    <TabPanel>
+                                        {/* Ustensiles */}
+                                        <div className='grid grid-cols-1 sm:grid-cols-6 gap-4'>
+                                            {recipe.tools.map((tool) => (
+                                                <Card
+                                                    key={tool.id}
+                                                    image={tool.tool.image}
+                                                    alt={tool.tool.nameTool}
+                                                    quantity={tool.quantity}
+                                                    name={tool.tool.nameTool}
+                                                />
+                                            ))}
+                                        </div>
+                                    </TabPanel>
+                                </TabPanels>
+                            </TabGroup>
 
                         </div>
-
                     </div>
 
                     {/* Troisième partie */}
@@ -148,7 +179,6 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                 icon={Waypoints}
                                 text="Étapes"
                                 count={stepsCount}
-
                             />
                         </div>
 
@@ -170,7 +200,6 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                         number={step.number}
                                     />
                                 </SwiperSlide>
-
                             ))}
                         </Swiper>
                     </div>
@@ -186,7 +215,6 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                         </div>
 
                         {recipe.comments && recipe?.comments.length > 0 ? (
-
                             recipe.comments.map((comment: CommentType) => (
                                 <Comment
                                     key={comment.id}
@@ -208,12 +236,22 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                     </div>
 
                     <div className='m-28'>
-                            <SectionHeader
-                                icon={Lightbulb}
-                                text="Suggestions"
-                            />
+                        <SectionHeader
+                            icon={Lightbulb}
+                            text="Suggestions"
+                        />
 
+                        <div className='grid grid-cols-1 sm:grid-cols-6 gap-4'>
+                            {relatedRecipes.map((categoryRecipe: Recipe) => (
+                                <RecipeCard
+                                    key={categoryRecipe.id}
+                                    recipe={categoryRecipe}
+                                />
+                            ))}
                         </div>
+
+
+                    </div>
                 </>
 
             ) : (

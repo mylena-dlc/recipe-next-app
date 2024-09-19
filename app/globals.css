@@ -19,6 +19,13 @@ body {
   background: rgb(248 113 113) !important; 
 }
 
+.aspect-ratio {
+  aspect-ratio: 2 / 1.5;
+}
+
+/* .aspect-h-3 {
+  aspect-ratio: 3 / 4;
+} */
 
 
 /* :root {

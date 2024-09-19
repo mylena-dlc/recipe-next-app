@@ -2,12 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import RecipeCard from '@/components/RecipeCard'
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { EffectCoverflow, Pagination } from 'swiper/modules';
-
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/pagination';
 
 
 const RecipePage = () => {
@@ -26,31 +20,18 @@ const RecipePage = () => {
 
     return (
         <div>
-            <h1 className='text-5xl pb-8'>Dernières Recettes</h1>
-            <Swiper
-                effect={'coverflow'}
-                grabCursor={true}
-                centeredSlides={true}
-                slidesPerView={5}
-                coverflowEffect={{
-                    rotate: 50,
-                    stretch: 0,
-                    depth: 100,
-                    modifier: 1,
-                    slideShadows: true,
-                }}
-                pagination={true}
-                modules={[EffectCoverflow, Pagination]}
-                className="mySwiper"
-            >
+            <h1 className='text-5xl pb-8'>Toutes les recettes</h1>
+           
+           <div className='m-28'>
+             <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8'>
                 {recipes.map((recipe) => (
+                   
+                        <RecipeCard key={recipe.id} recipe={recipe} />
+                    
+                    ))}
+                    </div>
+           </div>
 
-                    <SwiperSlide className='w-[20%]' key={recipe.id}>
-                        <RecipeCard recipe={recipe} />
-                    </SwiperSlide>
-
-                ))}
-            </Swiper>
         </div>
     )
 
