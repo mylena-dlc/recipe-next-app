@@ -15,7 +15,6 @@ const RecipePage = () => {
             setRecipes(data)
         }
 
-        fetchRecipes()
     }, [])
 
     return (

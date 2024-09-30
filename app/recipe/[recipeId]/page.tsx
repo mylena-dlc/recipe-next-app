@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import SectionHeader from '@/components/SectionHeader';
 import Tag from '@/components/Tag';
+import Button from '@/components/Button';
 import DifficultyRating from '@/components/DifficultyRating';
-import { Clock11, ListChecks, CookingPot, Waypoints, MessageSquareQuote, Lightbulb } from 'lucide-react';
+import { Clock11, ListChecks, CookingPot, Waypoints, MessageSquareQuote, Lightbulb, Download, Heart } from 'lucide-react';
 import Image from 'next/image';
 import Card from '@/components/Card';
 import Step from '@/components/Step';
@@ -26,6 +27,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const [relatedRecipes, setRelatedRecipes] = useState<Recipe[]>([]);
     const stepsCount = recipe ? recipe.steps.length : 0;
     const commentsCount = recipe ? recipe.comments.length : 0;
+    const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -51,9 +53,33 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
 
                 setRelatedRecipes(randomRecipes);
             };
+             // Vérifier si la recette est déjà dans les favoris
+             const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+             const isFav = favorites.some((fav: any) => fav.id === data.id);
+             setIsFavorite(isFav);
         }
         fetchRecipe();
     }, [params.recipeId]);
+
+    const handleFavoriteClick = () => {
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+        if (isFavorite) {
+            // Si la recette est déjà en favoris, on la retire
+            favorites = favorites.filter((fav: any) => fav.id !== recipe?.id);
+        } else {
+            // Sinon, on l'ajoute aux favoris
+            if (recipe) {
+                favorites.push(recipe);
+            }
+        }
+
+        // Met à jour le localStorage avec les favoris
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+
+        // Met à jour l'état local pour afficher visuellement que la recette est en favoris
+        setIsFavorite(!isFavorite);
+    };
 
     const getCategoryColor = (category: string) => {
         switch (category.toLowerCase()) {
@@ -88,6 +114,25 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                 </span>
                                 <DifficultyRating difficulty={recipe.difficulty} />
                             </div>
+                            <div className='flex items-center justify-center mx-44'>
+                                <Button
+                                    label="Télécharger"
+                                    href="#"
+                                    className="mx8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-white disabled:bg-gray-400 hover:opacity-80 focus:border-transparent
+                                    focus:outline-none focus:ring-0 flex justify-center"
+                                    icon = {<Download />}
+                                />
+                                <Button
+                                    label={isFavorite ? "Retirer des Favoris" : "Ajouter aux Favoris"} // Mise à jour du label selon l'état
+                                    href="#"
+                                    className="mx-8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-white disabled:bg-gray-400 hover:opacity-80 focus:border-transparent
+                                    focus:outline-none focus:ring-0 flex justify-center"
+                                    icon = {<Heart />}
+                                    onClick={handleFavoriteClick}
+                                />
+                                
+                            </div>
+
                         </div>
                         <div className="w-1/2 p-4 relative min-h-[400px]">
                             <Image

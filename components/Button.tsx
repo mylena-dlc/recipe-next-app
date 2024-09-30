@@ -6,10 +6,11 @@ interface ButtonProps {
   href: string;
   className?: string;
   icon?: React.ReactNode;
+  onClick?: () => void;
 }
-const Button:React.FC<ButtonProps> = ({ label, href, icon, className }) => {
+const Button:React.FC<ButtonProps> = ({ label, href, icon, className, onClick }) => {
   return (
-    <Link className={`w-2/3 flex items-center pl-5 py-2 mt-3  cursor-pointer rounded-lg duration-300 ${className}`}
+    <Link onClick={onClick} className={`w-2/3 flex items-center pl-5 py-2 mt-3  cursor-pointer rounded-lg duration-300 ${className}`}
       href={href}
       >
           {label}
