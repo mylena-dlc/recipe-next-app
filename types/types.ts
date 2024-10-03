@@ -58,3 +58,30 @@ interface CommentType {
     userId: string;
     createdAt: Date;
 }
+
+interface ArticleCommentType {
+    id: string;
+    text: string;
+    userId: string;
+    createdAt: Date;
+}
+
+interface TagType {
+    id: string;
+    name: string;
+}
+ 
+interface TagArticleType {
+    id: string;
+    tag: TagType;
+}
+ 
+interface ArticleWithTagsAndComments {
+    id: string;
+    title: string;
+    text: string;
+    slug: string;
+    createdAt: Date;
+    tags: TagArticleType[];
+    comments: ArticleCommentType[];
+}

@@ -19,7 +19,7 @@ const NavBar:React.FC = () => {
                     </Link>
                 </li>
                 <li className='p-5'>
-                     <Link className='cursor-pointer hover:underline' href="#"> 
+                     <Link className='cursor-pointer hover:underline' href="/article"> 
                         Blog
                     </Link>
                 </li>
