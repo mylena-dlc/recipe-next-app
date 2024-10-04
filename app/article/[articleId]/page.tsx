@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react'
 import Tag from '@/components/Tag'
 import AddCommentArticle from '@/components/AddCommentArticle'
 import { formatDate } from '@/lib/utils'
-import Comment from '@/components/Comment'
+import CommentArticle from '@/components/CommentArticle'
 import SectionHeader from '@/components/SectionHeader'
-import { MessageSquareQuote } from 'lucide-react';
+import Button from '@/components/Button'
+import { MessageSquareQuote, ArrowLeft } from 'lucide-react';
 
 
 const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
@@ -45,11 +46,18 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
         <div className='group p-6'>
             {article && (
                 <div className='mx-20'>
+                    <Button 
+                        href="/article"
+                        label="Retour"
+                        icon={<ArrowLeft />}
+                        className="bg-red-400 w-40 flex-row-reverse justify-center pl-0 text-white"
+                    />
+
                     {/* <div className="rounded-md flex flex-col justify-center items-center bg-[url('../public/img/overlay.png')] bg-cover bg-center h-[400px] max-h-[400px] filter grayscale"> */}
                     <div className="rounded-md flex flex-col justify-center items-center bg-cover bg-center h-[400px] max-h-[400px] filter grayscale">
                         <div className='my-5 flex flex-wrap gap-3'>
                             {article.tags.map((tagArticle: TagArticleType) => (
-                                <Tag key={tagArticle.tag.id} text={tagArticle.tag.name} className="bg-red-400 text-base" />
+                                <Tag key={tagArticle.tag.id} text={tagArticle.tag.name} className="bg-red-400 text-base text-white" />
                             ))}
                         </div>
 
@@ -65,8 +73,8 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
                     />
 
                     {article.comments && article?.comments.length > 0 ? (
-                        article.comments.map((comment: CommentType) => (
-                            <Comment key={comment.id} comment={comment} />
+                        article.comments.map((articleComment: ArticleCommentType) => (
+                            <CommentArticle key={articleComment.id} articleComment={articleComment} />
                         ))
                     ) : (
                         <p>Aucun commentaire.</p>

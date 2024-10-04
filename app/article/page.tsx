@@ -19,10 +19,9 @@ const ArticlePage = () => {
   }, [])
 
   return (
-    <div className='mt-10'>
+    <div className='pt-6'>
       <NavBar />
-      <h1 className='text-2xl pb-10'>Blog</h1>
-
+      <h1 className='text-5xl pb-8'>Blog</h1>
       <div className='mx-[200px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         {/* Liste des articles */}
         {articles.map((article: any) => (

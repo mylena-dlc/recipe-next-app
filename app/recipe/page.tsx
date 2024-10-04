@@ -15,24 +15,20 @@ const RecipePage = () => {
             setRecipes(data)
         }
 
-    }, [])
+        fetchRecipes();
+    }, []);
 
     return (
-        <div>
+        <div className='pt-6'>
             <h1 className='text-5xl pb-8'>Toutes les recettes</h1>
-           
-           <div className='m-28'>
-             <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8'>
-                {recipes.map((recipe) => (
-                   
+            <div className='m-28'>
+                <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8'>
+                    {recipes.map((recipe) => (
                         <RecipeCard key={recipe.id} recipe={recipe} />
-                    
                     ))}
-                    </div>
-           </div>
-
+                </div>
+            </div>
         </div>
     )
-
 }
 export default RecipePage

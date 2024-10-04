@@ -26,7 +26,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
   }
 
   return (
-    <div className='bg-slate-800 rounded-lg'>
+    <div className='bg-white dark:bg-slate-800 rounded-lg'>
 
       <div className='relative'>
         
@@ -49,7 +49,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
       <div className='p-5'>
         <h2 className='text-2xl py-6'>{recipe.nameRecipe}</h2>
 
-        <div className='pb-5'>
+        <div className='pb-5 text-white'>
           <Tag text={recipe.category.nameCategory} style={{ backgroundColor: getCategoryColor(recipe.category.nameCategory) }} />
         </div>
 
@@ -67,7 +67,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         <Button
           label="Voir la Recette"
           href={`/recipe/${recipe.id}`}
-          className="border-2 border-white hover:bg-slate-900 hover:border-slate-900"
+          className="border-2 border-slate-500 dark:border-white hover:bg-red-400 hover:text-white hover:border-white dark:hover:bg-slate-900 dark:hover:border-slate-900"
           icon={<ArrowRight />}
         />
       </div>

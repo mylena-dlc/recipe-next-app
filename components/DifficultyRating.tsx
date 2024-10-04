@@ -14,8 +14,9 @@ const DifficultyRating: React.FC<DifficultyRatingProps> = ({ difficulty }) => {
       {[...Array(totalClocks)].map((_, index) => (
         <ChefHat
           key={index}
-          className="w-6 h-6 mr-1"
-          color={index < difficulty ? '#FFD700' : '#FFFFFF'} // Toques colorées ou blanches
+          className={`w-6 h-6 mr-1 transition-colors 
+            ${index < difficulty ? 'text-yellow-400' : 'text-slate-500'} 
+            dark:${index < difficulty ? 'text-yellow-300' : 'text-white'}`}
           fill="none" // Pas de remplissage, juste les contours
         />
       ))}

@@ -34,7 +34,7 @@ const Comment = ({ comment }: CommentProps) => {
             </div>
 
             <div className='sm:top-5 sm:right-5 self-center'>
-                <button onClick={handleDelete} className="flex gap-2 p-2 rounded-md bg-red-500 hover:bg-red-600 text-xs"><Trash2 size={15} />Delete</button>
+                <button onClick={handleDelete} className="text-white flex gap-2 p-2 rounded-md bg-red-500 hover:bg-red-600 text-xs"><Trash2 size={15} />Delete</button>
             </div>
 
         </div>

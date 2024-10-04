@@ -9,7 +9,7 @@ export async function POST(req: Request) {
             return new NextResponse('Invalid Input', { status: 400 });
         }
 
-        const newCommentArticle = await db.comment.create({
+        const newArticleComment = await db.articleComment.create({
             data: {
                 text,
                 articleId,  // Associe le commentaire à un article
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
             }
         });
 
-        return new NextResponse(JSON.stringify(newCommentArticle), { status: 201 });
+        return new NextResponse(JSON.stringify(newArticleComment), { status: 201 });
         
     } catch (error) {
         console.error("[COMMENT POST]", error);

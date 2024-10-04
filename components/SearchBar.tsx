@@ -25,9 +25,9 @@ export default function SearchBar() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Rechercher..."
-        className="p-1 rounded-md text-slate-900"
+        className="p-1 rounded-md text-slate-500 dark:color-white bg-gray-100"
       />
-      <button type="submit" className=" p-2 text-white rounded-md">
+      <button type="submit" className=" p-2 text-slate-500  dark:text-white rounded-md">
         <Search />
       </button>
     </form>

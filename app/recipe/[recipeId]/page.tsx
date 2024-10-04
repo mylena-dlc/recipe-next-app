@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import SectionHeader from '@/components/SectionHeader';
 import Tag from '@/components/Tag';
 import Button from '@/components/Button';
@@ -12,6 +12,10 @@ import Step from '@/components/Step';
 import Comment from '@/components/Comment';
 import AddComment from '@/components/AddComment';
 import RecipeCard from '@/components/RecipeCard';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import html2pdf from 'html2pdf.js';
+
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
@@ -28,13 +32,20 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const stepsCount = recipe ? recipe.steps.length : 0;
     const commentsCount = recipe ? recipe.comments.length : 0;
     const [isFavorite, setIsFavorite] = useState(false);
+    const pageRef = useRef<HTMLDivElement>(null);
+
+    const handleDownloadPdf = () => {
+        const element = pageRef.current;
+        if (element) {
+            html2pdf().from(element).save();
+        }
+    };
 
     useEffect(() => {
         const fetchRecipe = async () => {
             const response = await fetch(`/api/recipe/${params.recipeId}`);
             const data: Recipe = await response.json();
             setRecipe(data);
-
 
             // Récupérez les recettes de la même catégorie
             if (data.category && data.category.id) {
@@ -84,29 +95,94 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const getCategoryColor = (category: string) => {
         switch (category.toLowerCase()) {
             case 'plat':
-                return 'rgb(37 90 37)'; // vert foncé
+                return 'rgb(37 90 37)'; 
             case 'dessert':
-                return 'rgb(144 139 117)'; // beige
+                return 'rgb(144 139 117)'; 
             case 'entrée':
-                return '#D0838E'; // vieux rose
+                return '#D0838E';
             default:
                 return 'rgb(59 102 123)'; // couleur par défaut
         }
     };
 
+    const generatePDF = () => {
+        if (!recipe) return;
+
+        const  doc  =  new  jsPDF() ;
+       
+        // Titre de la recette
+        doc.setFontSize(20);
+        doc.text(recipe.nameRecipe, 10, 30);
+    
+        // Catégorie, durée de préparation, et difficulté
+        doc.setFontSize(12);
+        doc.text(`Catégorie: ${recipe.category.nameCategory}`, 10, 20);
+        doc.text(`Durée de préparation: ${recipe.preparationTime} minutes`, 10, 30);
+        doc.text(`Difficulté: ${recipe.difficulty}/5`, 10, 40);
+    
+        // Ingrédients
+        const ingredients = recipe.ingredients.map((ingredient) => [
+            ingredient.ingredient.nameIngredient,
+            `${ingredient.quantity} ${ingredient.unity}`
+        ]);
+        doc.autoTable({
+            startY: 55,
+            head: [["Ingrédient", "Quantité"]],
+            body: ingredients,
+            headStyles: {
+                fillColor: [144, 139, 117], 
+                textColor: [255, 255, 255], 
+                halign: 'center' 
+            }
+        });
+    
+        // Ustensiles
+        const tools = recipe.tools.map((tool) => [
+            tool.tool.nameTool,
+            tool.quantity || '1'
+        ]);
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 15,
+            head: [["Ustensile", "Quantité"]],
+            body: tools,
+            headStyles: {
+                fillColor: [144, 139, 117], 
+                textColor: [255, 255, 255], 
+                halign: 'center' 
+            }
+        });
+    
+        // Instructions
+        doc.text("Instructions:", 10, doc.lastAutoTable.finalY + 20);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 10;
+        const maxLineWidth = pageWidth - margin * 2;
+        recipe.steps.forEach((step, index) => {
+            const stepText = `${index + 1}. ${step.text}`;
+            // Scinder le texte en lignes pour respecter la largeur maximale
+            const splitText = doc.splitTextToSize(stepText, maxLineWidth);
+            
+            // Afficher le texte à partir de la position X=10 (gauche) et Y en fonction de l'index
+            doc.text(splitText, 10, doc.lastAutoTable.finalY + 30 + index * 10);
+        });
+            
+        // Télécharger le PDF
+        doc.save(`${recipe.nameRecipe}.pdf`);
+    };
+    
     return (
         <div>
             {recipe ? (
                 <>
                     {/* Première section */}
-                    <div className='bg-slate-600 rounded-md m-28 flex'>
+                    <div className=' bg-white dark:bg-slate-600 rounded-md m-28 flex' ref={pageRef}>
                         <div className="w-1/2 p-4 flex flex-col justify-center">
                             <h1 className='text-4xl text-center p-5'>{recipe.nameRecipe}</h1>
-                            <div className='flex items-center justify-center'>
+                            <div className='flex items-center justify-center '>
                                 <Tag
                                     text={recipe.category.nameCategory}
                                     style={{ backgroundColor: getCategoryColor(recipe.category.nameCategory) }}
-                                    className='mr-5'
+                                    className='mr-5 text-white'
                                 />
                                 <span className='inline-flex mr-5'>
                                     <Clock11 className='mr-2' />
@@ -121,13 +197,14 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                     className="mx8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-white disabled:bg-gray-400 hover:opacity-80 focus:border-transparent
                                     focus:outline-none focus:ring-0 flex justify-center"
                                     icon = {<Download />}
+                                    onClick={generatePDF}
                                 />
                                 <Button
-                                    label={isFavorite ? "Retirer des Favoris" : "Ajouter aux Favoris"} // Mise à jour du label selon l'état
+                                    label={""} 
                                     href="#"
-                                    className="mx-8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-white disabled:bg-gray-400 hover:opacity-80 focus:border-transparent
-                                    focus:outline-none focus:ring-0 flex justify-center"
-                                    icon = {<Heart />}
+                                    className="mx-8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-color-white disabled:bg-gray-400 hover:opacity-80 focus:border-transparent
+                                    focus:outline-none focus:ring-0 flex justify-center pl-0"
+                                    icon={<Heart fill={isFavorite ? "white" : "none"} stroke={isFavorite ? "none" : "#FFFFFF"} />} 
                                     onClick={handleFavoriteClick}
                                 />
                                 
@@ -161,17 +238,17 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                 text="Ingrédients et Ustensiles"
                             />
                             <TabGroup>
-                                <TabList className='flex bg-slate-800 rounded-md p-2 mb-8 font-bold'>
+                                <TabList className='flex bg-red-200 dark:bg-slate-800 rounded-md p-2 mb-8 font-bold'>
                                     <Tab
                                         className={({ selected }) =>
-                                            `w-auto mr-4 p-2 uppercase rounded-md ${selected ? 'bg-gradient-to-tr from-[#e56d59] to-[#ea8869]' : 'text-white hover:bg-gradient-to-tr from-[#e56d59] to-[#ea8869]'}`
+                                            `text-white w-auto mr-4 p-2 uppercase rounded-md ${selected ? 'bg-gradient-to-tr from-[#e56d59] to-[#ea8869]' : 'text-white hover:bg-gradient-to-tr from-[#e56d59] to-[#ea8869]'}`
                                         }
                                     >
                                         Ingrédients
                                     </Tab>
                                     <Tab
                                         className={({ selected }) =>
-                                            `w-auto p-2 uppercase rounded-md ${selected ? 'bg-gradient-to-tr from-[#e56d59] to-[#ea8869]' : 'text-white hover:bg-gradient-to-tr from-[#e56d59] to-[#ea8869]'}`
+                                            `text-white w-auto p-2 uppercase rounded-md ${selected ? 'bg-gradient-to-tr from-[#e56d59] to-[#ea8869]' : 'text-white hover:bg-gradient-to-tr from-[#e56d59] to-[#ea8869]'}`
                                         }
                                     >
                                         Ustensiles
@@ -290,8 +367,6 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                 />
                             ))}
                         </div>
-
-
                     </div>
                 </>
 
