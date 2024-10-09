@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import ArticleCard from '@/components/ArticleCard'
 import NavBar from '@/components/NavBar'
@@ -19,10 +19,10 @@ const ArticlePage = () => {
   }, [])
 
   return (
-    <div className='pt-6'>
+    <div className='pt-6 px-4 md:px-6 lg:px-10'>
       <NavBar />
-      <h1 className='text-5xl pb-8'>Blog</h1>
-      <div className='mx-[200px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+      <h1 className='text-4xl sm:text-5xl pb-8 text-center'>Blog</h1>
+      <div className='mx-auto max-w-screen-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         {/* Liste des articles */}
         {articles.map((article: any) => (
           <Link key={article.id} href={`/article/${article.id}`}>
@@ -34,4 +34,4 @@ const ArticlePage = () => {
   )
 }
 
-export default ArticlePage
+export default ArticlePage;

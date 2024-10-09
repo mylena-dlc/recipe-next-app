@@ -25,12 +25,23 @@ export default function Home() {
 
     return (
         <div className='pt-6'>
-            <h1 className='text-5xl pb-8 text-slate-500 dark:text-white'>Dernières Recettes</h1>
+            <h1 className='text-3xl sm:text-4xl md:text-5xl pb-4 md:pb-8 text-slate-500 dark:text-white'>
+                Dernières Recettes
+            </h1>
             <Swiper
                 effect={'coverflow'}
                 grabCursor={true}
                 centeredSlides={true}
-                slidesPerView={5}
+                 // Nombre de slides visibles varie en fonction de la taille de l'écran
+                 slidesPerView={1} 
+                 breakpoints={{
+                     768: { 
+                         slidesPerView: 3,
+                     },
+                     1024: { 
+                         slidesPerView: 5,
+                     },
+                 }}
                 coverflowEffect={{
                     rotate: 50,
                     stretch: 0,

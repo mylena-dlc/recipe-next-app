@@ -1,18 +1,16 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from 'react'
-import Tag from '@/components/Tag'
-import AddCommentArticle from '@/components/AddCommentArticle'
-import { formatDate } from '@/lib/utils'
-import CommentArticle from '@/components/CommentArticle'
-import SectionHeader from '@/components/SectionHeader'
-import Button from '@/components/Button'
+import React, { useEffect, useState } from 'react';
+import Tag from '@/components/Tag';
+import AddCommentArticle from '@/components/AddCommentArticle';
+import { formatDate } from '@/lib/utils';
+import CommentArticle from '@/components/CommentArticle';
+import SectionHeader from '@/components/SectionHeader';
+import Button from '@/components/Button';
 import { MessageSquareQuote, ArrowLeft } from 'lucide-react';
 
-
 const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
-
-    const [article, setArticle] = useState<ArticleWithTagsAndComments | null>(null)
+    const [article, setArticle] = useState<ArticleWithTagsAndComments | null>(null);
     const [loading, setLoading] = useState(true);
     const commentsCount = article ? article.comments.length : 0;
 
@@ -43,28 +41,28 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
     }
 
     return (
-        <div className='group p-6'>
+        <div className='group p-4 md:p-6'>
             {article && (
-                <div className='mx-20'>
+                <div className='mx-auto max-w-screen-lg'>
                     <Button 
                         href="/article"
                         label="Retour"
                         icon={<ArrowLeft />}
-                        className="bg-red-400 w-40 flex-row-reverse justify-center pl-0 text-white"
+                        className="bg-red-400 w-full md:w-40 flex-row-reverse justify-center pl-0 text-white mb-4"
                     />
 
-                    {/* <div className="rounded-md flex flex-col justify-center items-center bg-[url('../public/img/overlay.png')] bg-cover bg-center h-[400px] max-h-[400px] filter grayscale"> */}
-                    <div className="rounded-md flex flex-col justify-center items-center bg-cover bg-center h-[400px] max-h-[400px] filter grayscale">
+                    <div className="rounded-md flex flex-col justify-center items-center bg-cover bg-center h-[300px] md:h-[400px] max-h-[400px] filter grayscale">
                         <div className='my-5 flex flex-wrap gap-3'>
                             {article.tags.map((tagArticle: TagArticleType) => (
                                 <Tag key={tagArticle.tag.id} text={tagArticle.tag.name} className="bg-red-400 text-base text-white" />
                             ))}
                         </div>
 
-                        <h1 className='text-2xl'>{article?.title}</h1>
+                        <h1 className='text-xl md:text-2xl text-center'>{article?.title}</h1>
                         <p className='text-sm text-slate-400 my-2'>{formatDate(article.createdAt)}</p>
                     </div>
-                    <p className='my-10'>{article?.text}</p>
+                    
+                    <p className='my-6 text-base md:text-lg'>{article?.text}</p>
 
                     <SectionHeader
                         icon={MessageSquareQuote}
@@ -81,11 +79,10 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
                     )}
 
                     {/* <AddCommentArticle articleId={article.id} /> */}
-
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
-export default ArticleDetailPage
+export default ArticleDetailPage;
