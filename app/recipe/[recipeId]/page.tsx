@@ -15,7 +15,7 @@ import RecipeCard from '@/components/RecipeCard';
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import html2pdf from 'html2pdf.js';
-
+import { useUser } from '@clerk/nextjs';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
@@ -33,6 +33,10 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const commentsCount = recipe ? recipe.comments.length : 0;
     const [isFavorite, setIsFavorite] = useState(false);
     const pageRef = useRef<HTMLDivElement>(null);
+    const { user } = useUser(); // Obtenez l'utilisateur connecté
+    const [nutritionalValues, setNutritionalValues] = useState<any | null>(null); // État pour les valeurs nutritionnelles
+
+    
 
     const handleDownloadPdf = () => {
         const element = pageRef.current;
@@ -46,6 +50,30 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
             const response = await fetch(`/api/recipe/${params.recipeId}`);
             const data: Recipe = await response.json();
             setRecipe(data);
+
+             // Appel à l'API nutritionnelle
+        const ingredients = data.ingredients.map(ingredient => ({
+            name: ingredient.ingredient.nameIngredient,
+            quantity: ingredient.quantity,
+            unit: ingredient.unity,
+        }));
+
+        const nutritionResponse = await fetch('/api/nutrition', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ingredients }),
+        });
+
+        if (!nutritionResponse.ok) {
+            console.error('Erreur lors de la récupération des valeurs nutritionnelles');
+            return;
+        }
+
+        const nutritionData = await nutritionResponse.json();
+        setNutritionalValues(nutritionData); // Stocker les données nutritionnelles
+
 
             // Récupérez les recettes de la même catégorie
             if (data.category && data.category.id) {
@@ -191,27 +219,34 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                 <DifficultyRating difficulty={recipe.difficulty} />
                             </div>
                             <div className='flex items-center justify-center lg:mx-44 mx-0 flex-col md:flex-row '>
-                                <Button
-                                    label="Télécharger"
-                                    href="#"
-                                    className="mx8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-white disabled:bg-gray-400 hover:opacity-80 focus:border-transparent
-                                    focus:outline-none focus:ring-0 flex justify-center"
-                                    icon={<Download />}
-                                    onClick={generatePDF}
-                                />
-                                <Button
-                                    label={""}
-                                    href="#"
-                                    className="mx-8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-color-white disabled:bg-gray-400 hover:opacity-80 focus:border-transparent
-                                    focus:outline-none focus:ring-0 flex justify-center pl-0"
-                                    icon={<Heart fill={isFavorite ? "white" : "none"} stroke={isFavorite ? "none" : "#FFFFFF"} />}
-                                    onClick={handleFavoriteClick}
-                                />
-
+                                {user ? (
+                                    <>
+                                        <Button
+                                            label="Télécharger"
+                                            href="#"
+                                            className="mx8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-white hover:opacity-80 focus:border-transparent
+                                            focus:outline-none focus:ring-0 flex justify-center"
+                                            icon={<Download />}
+                                            onClick={generatePDF}
+                                        />
+                                        <Button
+                                            label={""}
+                                            href="#"
+                                            className="mx-8 mt-3 p-2 bg-gradient-to-tr from-[#e56d59] to-[#ea8869] rounded-md text-color-white hover:opacity-80 focus:border-transparent
+                                            focus:outline-none focus:ring-0 flex justify-center pl-0"
+                                            icon={<Heart fill={isFavorite ? "white" : "none"} stroke={isFavorite ? "none" : "#FFFFFF"} />}
+                                            onClick={handleFavoriteClick}
+                                        />
+                                    </>
+                                ) : (
+                                    <div className='mt-3 text-slate-800 text-sm italic text-center'>
+                                        <p>Veuillez vous connecter pour accéder aux fonctionnalités de téléchargement et de favoris.</p>
+                                    </div>
+                                )}
                             </div>
 
                         </div>
-                        <div className="lg:w-1/2 relative h-64 lg:h-auto">
+                        <div className="lg:w-1/2 relative h-64">
                             <Image
                                 src={recipe.image}
                                 fill // Utilise la propriété fill pour prendre toute la place du conteneur
@@ -223,13 +258,13 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                     </div>
 
                     {/* Deuxième section */}
-                    <div className='m-6 lg:m-12'>
-                        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+                    <div className='m-6 lg:m-12 flex'>
+                        <div className='w-1/2'>
                             <SectionHeader
                                 icon={ListChecks}
                                 text="Instructions"
                             />
-                            {recipe.instructions}
+                            <p>{recipe.instructions}</p>
                         </div>
 
                         <div className='w-full p-2 lg:w-1/2 lg:p-4'>
@@ -332,6 +367,27 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
 
                     </div>
 
+
+                    {/* Section des valeurs nutritionnelles */}
+<div className='m-6 lg:m-12'>
+    <SectionHeader
+        icon={Lightbulb}
+        text="Valeurs Nutritionnelles"
+    />
+    {nutritionalValues ? (
+        <div className='flex flex-col'>
+            <p>Calories: {nutritionalValues.calories} kcal</p>
+            <p>Protéines: {nutritionalValues.totalNutrients.PROCNT?.quantity} g</p>
+            <p>Glucides: {nutritionalValues.totalNutrients.CHOCDF?.quantity} g</p>
+            <p>Lipides: {nutritionalValues.totalNutrients.FAT?.quantity} g</p>
+        </div>
+    ) : (
+        <p>Chargement des valeurs nutritionnelles...</p>
+    )}
+</div>
+
+
+
                     {/* Commentaire */}
                     <div className='m-6 lg:m-12'>
                         <div className='pt-8'>
@@ -359,7 +415,13 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                                 text="Ajouter un commentaire"
                             />
 
-                            <AddComment recipeId={recipe.id} />
+                            {user ? (
+                                <AddComment recipeId={recipe.id} />
+                            ) : (
+                                <div className='mt-3 text-slate-800 text-sm italic'>
+                                    <p >Veuillez vous connecter pour ajouter un commentaire.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

@@ -3,9 +3,20 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import SearchBar from './SearchBar'
+import { checkUserRole } from '../lib/utils';
+import { SignedOut, UserButton, SignedIn, useSession } from '@clerk/nextjs';
 
 
 const NavBar: React.FC = () => {
+    const links = [
+        { title: 'Profil', url: '/profile' },
+        { title: 'Tableau de bord', url: '/user' },
+        { title: 'Admin Dashboard', url: '/admin', role: 'admin' },
+        // Add more placeholder links as needed
+    ];
+
+    const { session } = useSession();
+    const userRole = checkUserRole(session);
 
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -77,6 +88,42 @@ const NavBar: React.FC = () => {
                 <li className='p-5'>
                     <SearchBar />
                 </li>
+
+                <SignedIn>
+                    {links.map((link) =>
+                        (link.role === 'admin' && userRole === 'admin') || !link.role ? (
+                            <li key={link.title} className='p-5'>
+                                <Link  href={link.url} className='cursor-pointer hover:underline'>
+                                    {link.title}
+                                </Link>
+                            </li>
+                            
+                        ) : null
+                    )}
+                </SignedIn>
+
+                {/* SignedOut Component */}
+                <SignedOut>
+                    <a href='/sign-in'>
+                        <button className='text-white bg-red-400 border-0 py-2 px-4 focus:outline-none hover:bg-red-500 rounded text-base mr-4'>
+                            Connexion
+                        </button>
+                    </a>
+                    <a href='/sign-up'>
+                        <button className='text-white bg-red-400 border-0 py-2 px-4 focus:outline-none hover:bg-red-500 rounded text-base'>
+                            Inscription
+                        </button>
+                    </a>
+                </SignedOut>
+
+                {/* UserButton Component */}
+                <SignedIn>
+                    <div className='ml-4'>
+                        <UserButton afterSignOutUrl='/' />
+                    </div>
+                </SignedIn>
+
+
                 <li className='p-5'>
                     <button
                         onClick={toggleDarkMode}

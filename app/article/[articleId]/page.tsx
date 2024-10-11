@@ -8,12 +8,14 @@ import CommentArticle from '@/components/CommentArticle';
 import SectionHeader from '@/components/SectionHeader';
 import Button from '@/components/Button';
 import { MessageSquareQuote, ArrowLeft } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 
 const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
     const [article, setArticle] = useState<ArticleWithTagsAndComments | null>(null);
     const [loading, setLoading] = useState(true);
     const commentsCount = article ? article.comments.length : 0;
-
+    const { user } = useUser();
+    
     useEffect(() => {
         const fetchArticle = async () => {
             try {
@@ -44,7 +46,7 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
         <div className='group p-4 md:p-6'>
             {article && (
                 <div className='mx-auto max-w-screen-lg'>
-                    <Button 
+                    <Button
                         href="/article"
                         label="Retour"
                         icon={<ArrowLeft />}
@@ -61,7 +63,7 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
                         <h1 className='text-xl md:text-2xl text-center'>{article?.title}</h1>
                         <p className='text-sm text-slate-400 my-2'>{formatDate(article.createdAt)}</p>
                     </div>
-                    
+
                     <p className='my-6 text-base md:text-lg'>{article?.text}</p>
 
                     <SectionHeader
@@ -78,7 +80,15 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
                         <p>Aucun commentaire.</p>
                     )}
 
-                    {/* <AddCommentArticle articleId={article.id} /> */}
+
+                    {user ? (
+                        <AddCommentArticle articleId={article.id} />
+                    ) : (
+                        <div className='mt-3 text-slate-800 text-sm italic'>
+                            <p >Veuillez vous connecter pour ajouter un commentaire.</p>
+                        </div>
+                    )}
+
                 </div>
             )}
         </div>

@@ -52,7 +52,7 @@ const AddCommentArticle: React.FC<AddCommentArticleProps> = ({ articleId }) => {
             <textarea
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                className="w-full p-2 rounded-md bg-slate-700"
+                className="w-full p-2 rounded-md bg-white dark:bg-slate-700"
                 placeholder="Ajoutez votre commentaire ici ..."
                 rows={3}
             />
