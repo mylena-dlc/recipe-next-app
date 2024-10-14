@@ -34,16 +34,17 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const [isFavorite, setIsFavorite] = useState(false);
     const pageRef = useRef<HTMLDivElement>(null);
     const { user } = useUser(); // Obtenez l'utilisateur connecté
-    const [nutritionalValues, setNutritionalValues] = useState<any | null>(null); // État pour les valeurs nutritionnelles
+    const [nutritionData, setNutritionData] = useState(null); // pour stocker les données nutritionnelles
+const [nutritionError, setNutritionError] = useState(null); // pour stocker une erreur éventuelle
 
     
 
-    const handleDownloadPdf = () => {
-        const element = pageRef.current;
-        if (element) {
-            html2pdf().from(element).save();
-        }
-    };
+    // const handleDownloadPdf = () => {
+    //     const element = pageRef.current;
+    //     if (element) {
+    //         html2pdf().from(element).save();
+    //     }
+    // };
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -51,29 +52,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
             const data: Recipe = await response.json();
             setRecipe(data);
 
-             // Appel à l'API nutritionnelle
-        const ingredients = data.ingredients.map(ingredient => ({
-            name: ingredient.ingredient.nameIngredient,
-            quantity: ingredient.quantity,
-            unit: ingredient.unity,
-        }));
-
-        const nutritionResponse = await fetch('/api/nutrition', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ ingredients }),
-        });
-
-        if (!nutritionResponse.ok) {
-            console.error('Erreur lors de la récupération des valeurs nutritionnelles');
-            return;
-        }
-
-        const nutritionData = await nutritionResponse.json();
-        setNutritionalValues(nutritionData); // Stocker les données nutritionnelles
-
+            console.log("Détails de la recette chargés : ", data); // Vérifie que les détails de la recette sont bien récupérés
 
             // Récupérez les recettes de la même catégorie
             if (data.category && data.category.id) {
@@ -99,6 +78,60 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
         }
         fetchRecipe();
     }, [params.recipeId]);
+
+    // Ce useEffect sera déclenché lorsque "recipe" sera défini
+useEffect(() => {
+    if (!recipe) return; // Si la recette n'est pas encore définie, ne fait rien
+
+    console.log("Recette disponible, appel de getNutritionData...");
+    getNutritionData();
+}, [recipe]); // Ce useEffect dépend de la valeur de "recipe"
+
+const getNutritionData = async () => {
+    if (!recipe) {
+        console.log("Recette non chargée, impossible de récupérer les données nutritionnelles.");
+        return;
+    }
+
+    const recipeData = {
+        title: recipe.nameRecipe,
+        // ingredients: recipe.ingredients.map((ingredient) => {
+        //     // Ici, on enlève l'espace entre la quantité et l'unité, et on utilise des unités standards
+        //     const formattedIngredient = `${ingredient.quantity}${ingredient.unity === "gr" ? "g" : ingredient.unity} ${ingredient.ingredient.nameIngredient}`;
+            
+        //     // Log pour vérifier les ingrédients
+        //     console.log("Ingrédient formaté:", formattedIngredient);
+        //     return formattedIngredient;
+        // })   
+        ingredients: [
+            "200g all-purpose flour",
+            "130g granulated sugar"
+        ]
+    };
+
+    console.log("Envoi des données nutritionnelles : ", recipeData);
+
+    try {
+        const response = await fetch('/api/nutrition', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(recipeData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des données nutritionnelles');
+        }
+
+        const data = await response.json();
+        console.log("Données nutritionnelles reçues : ", data);
+        setNutritionData(data);
+    } catch (error) {
+        console.error('Erreur dans getNutritionData:', error);
+        setNutritionError(error.message);
+    }
+}
 
     const handleFavoriteClick = () => {
         let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -197,6 +230,8 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
         // Télécharger le PDF
         doc.save(`${recipe.nameRecipe}.pdf`);
     };
+
+    
 
     return (
         <div>
@@ -374,16 +409,28 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
         icon={Lightbulb}
         text="Valeurs Nutritionnelles"
     />
-    {nutritionalValues ? (
-        <div className='flex flex-col'>
-            <p>Calories: {nutritionalValues.calories} kcal</p>
-            <p>Protéines: {nutritionalValues.totalNutrients.PROCNT?.quantity} g</p>
-            <p>Glucides: {nutritionalValues.totalNutrients.CHOCDF?.quantity} g</p>
-            <p>Lipides: {nutritionalValues.totalNutrients.FAT?.quantity} g</p>
+ 
+ {/* {nutritionData ? (
+        <div className="bg-white dark:bg-slate-600 rounded-md p-6">
+            <p><strong>Calories:</strong> {nutritionData.calories} kcal</p>
+            <p><strong>Labels Diététiques:</strong> {nutritionData.dietLabels.join(', ')}</p>
+            <p><strong>Labels de Santé:</strong> {nutritionData.healthLabels.join(', ')}</p>
         </div>
+    ) : nutritionError ? (
+        <p className="text-red-500">Erreur : {nutritionError}</p>
     ) : (
-        <p>Chargement des valeurs nutritionnelles...</p>
-    )}
+        <p>Chargement des informations nutritionnelles...</p>
+    )} */}
+    
+    <p><strong>Calories:</strong> {nutritionData?.calories ?? 'Non spécifié'} kcal</p>
+<p><strong>Labels Diététiques:</strong> 
+    {nutritionData?.dietLabels && Array.isArray(nutritionData.dietLabels) ? nutritionData.dietLabels.join(', ') : 'Aucun label disponible'}
+</p>
+<p><strong>Labels de Santé:</strong> 
+    {nutritionData?.healthLabels && Array.isArray(nutritionData.healthLabels) ? nutritionData.healthLabels.join(', ') : 'Aucun label de santé disponible'}
+</p>
+
+
 </div>
 
 
