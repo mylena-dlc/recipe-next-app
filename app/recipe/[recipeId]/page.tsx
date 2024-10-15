@@ -5,7 +5,7 @@ import SectionHeader from '@/components/SectionHeader';
 import Tag from '@/components/Tag';
 import Button from '@/components/Button';
 import DifficultyRating from '@/components/DifficultyRating';
-import { Clock11, ListChecks, CookingPot, Waypoints, MessageSquareQuote, Lightbulb, Download, Heart } from 'lucide-react';
+import { Clock11, ListChecks, CookingPot, Waypoints, MessageSquareQuote, Lightbulb, Download, Heart, Leaf, Apple, Drumstick, Wheat, Droplet, Candy, Citrus } from 'lucide-react';
 import Image from 'next/image';
 import Card from '@/components/Card';
 import Step from '@/components/Step';
@@ -14,8 +14,9 @@ import AddComment from '@/components/AddComment';
 import RecipeCard from '@/components/RecipeCard';
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import html2pdf from 'html2pdf.js';
 import { useUser } from '@clerk/nextjs';
+import translations from '@/lib/translations';
+import NutritionalCard from '@/components/NutritionalCard';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
@@ -35,16 +36,6 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const pageRef = useRef<HTMLDivElement>(null);
     const { user } = useUser(); // Obtenez l'utilisateur connecté
     const [nutritionData, setNutritionData] = useState(null); // pour stocker les données nutritionnelles
-const [nutritionError, setNutritionError] = useState(null); // pour stocker une erreur éventuelle
-
-    
-
-    // const handleDownloadPdf = () => {
-    //     const element = pageRef.current;
-    //     if (element) {
-    //         html2pdf().from(element).save();
-    //     }
-    // };
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -80,58 +71,62 @@ const [nutritionError, setNutritionError] = useState(null); // pour stocker une 
     }, [params.recipeId]);
 
     // Ce useEffect sera déclenché lorsque "recipe" sera défini
-useEffect(() => {
-    if (!recipe) return; // Si la recette n'est pas encore définie, ne fait rien
+    useEffect(() => {
+        if (!recipe) return; // Si la recette n'est pas encore définie, ne fait rien
 
-    console.log("Recette disponible, appel de getNutritionData...");
-    getNutritionData();
-}, [recipe]); // Ce useEffect dépend de la valeur de "recipe"
+        console.log("Recette disponible, appel de getNutritionData...");
+        getNutritionData();
+    }, [recipe]); // Ce useEffect dépend de la valeur de "recipe"
 
-const getNutritionData = async () => {
-    if (!recipe) {
-        console.log("Recette non chargée, impossible de récupérer les données nutritionnelles.");
-        return;
-    }
-
-    const recipeData = {
-        title: recipe.nameRecipe,
-        // ingredients: recipe.ingredients.map((ingredient) => {
-        //     // Ici, on enlève l'espace entre la quantité et l'unité, et on utilise des unités standards
-        //     const formattedIngredient = `${ingredient.quantity}${ingredient.unity === "gr" ? "g" : ingredient.unity} ${ingredient.ingredient.nameIngredient}`;
-            
-        //     // Log pour vérifier les ingrédients
-        //     console.log("Ingrédient formaté:", formattedIngredient);
-        //     return formattedIngredient;
-        // })   
-        ingredients: [
-            "200g all-purpose flour",
-            "130g granulated sugar"
-        ]
-    };
-
-    console.log("Envoi des données nutritionnelles : ", recipeData);
-
-    try {
-        const response = await fetch('/api/nutrition', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(recipeData),
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de la récupération des données nutritionnelles');
+    const getNutritionData = async () => {
+        if (!recipe) {
+            console.log("Recette non chargée, impossible de récupérer les données nutritionnelles.");
+            return;
         }
+        // Fonction de traduction des ingrédients
+        const translateIngredient = (ingredientName) => {
+            return translations[ingredientName.toLowerCase()];
+        };
 
-        const data = await response.json();
-        console.log("Données nutritionnelles reçues : ", data);
-        setNutritionData(data);
-    } catch (error) {
-        console.error('Erreur dans getNutritionData:', error);
-        setNutritionError(error.message);
+        const recipeData = {
+            title: recipe.nameRecipe,
+            ingredients: recipe.ingredients.map((ingredient) => {
+                // Traduction des ingrédients en anglais
+                const translatedIngredient = translateIngredient(ingredient.ingredient.nameIngredient);
+
+                // Si la traduction n'est pas trouvée, on retourne null
+                if (!translatedIngredient) return null;
+
+                // Formatage de l'ingrédient uniquement si la traduction est valide
+                return `${ingredient.quantity}${ingredient.unity === "gr" ? "g" : ingredient.unity} ${translatedIngredient}`;
+            })
+                // On filtre les ingrédients pour exclure ceux qui sont null
+                .filter(Boolean) // Ceci élimine les valeurs null
+        };
+
+        console.log("Données à envoyer:", recipeData);
+
+        try {
+            const response = await fetch('/api/nutrition', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(recipeData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la récupération des données nutritionnelles');
+            }
+
+            const data = await response.json();
+            console.log("Données nutritionnelles reçues : ", data);
+            setNutritionData(data);
+        } catch (error) {
+            console.error('Erreur dans getNutritionData:', error);
+            setNutritionError(error.message);
+        }
     }
-}
 
     const handleFavoriteClick = () => {
         let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -231,7 +226,6 @@ const getNutritionData = async () => {
         doc.save(`${recipe.nameRecipe}.pdf`);
     };
 
-    
 
     return (
         <div>
@@ -402,38 +396,51 @@ const getNutritionData = async () => {
 
                     </div>
 
-
                     {/* Section des valeurs nutritionnelles */}
-<div className='m-6 lg:m-12'>
-    <SectionHeader
-        icon={Lightbulb}
-        text="Valeurs Nutritionnelles"
-    />
- 
- {/* {nutritionData ? (
-        <div className="bg-white dark:bg-slate-600 rounded-md p-6">
-            <p><strong>Calories:</strong> {nutritionData.calories} kcal</p>
-            <p><strong>Labels Diététiques:</strong> {nutritionData.dietLabels.join(', ')}</p>
-            <p><strong>Labels de Santé:</strong> {nutritionData.healthLabels.join(', ')}</p>
-        </div>
-    ) : nutritionError ? (
-        <p className="text-red-500">Erreur : {nutritionError}</p>
-    ) : (
-        <p>Chargement des informations nutritionnelles...</p>
-    )} */}
-    
-    <p><strong>Calories:</strong> {nutritionData?.calories ?? 'Non spécifié'} kcal</p>
-<p><strong>Labels Diététiques:</strong> 
-    {nutritionData?.dietLabels && Array.isArray(nutritionData.dietLabels) ? nutritionData.dietLabels.join(', ') : 'Aucun label disponible'}
-</p>
-<p><strong>Labels de Santé:</strong> 
-    {nutritionData?.healthLabels && Array.isArray(nutritionData.healthLabels) ? nutritionData.healthLabels.join(', ') : 'Aucun label de santé disponible'}
-</p>
-
-
-</div>
-
-
+                    <div className='m-6 lg:m-12'>
+                        <SectionHeader
+                            icon={Leaf}
+                            text="Valeurs Nutritionnelles"
+                        />
+                        <div className='grid grid-cols-3 gap-4'>
+                            <NutritionalCard
+                                icon={Apple}
+                                title="Calories"
+                                result={nutritionData?.calories ?? 0}
+                                unit="kcal"
+                            />
+                            <NutritionalCard
+                                icon={Drumstick}
+                                title="Protéines"
+                                result={nutritionData?.totalNutrients?.PROCNT?.quantity ?? 0}
+                                unit="g"
+                            />
+                            <NutritionalCard
+                                icon={Wheat}
+                                title="Glucides"
+                                result={nutritionData?.totalNutrients?.CHOCDF?.quantity ?? 0}
+                                unit="g"
+                            />
+                            <NutritionalCard
+                                icon={Droplet}
+                                title="Lipides"
+                                result={nutritionData?.totalNutrients?.FAT?.quantity ?? 0}
+                                unit="g"
+                            />
+                            <NutritionalCard
+                                icon={Candy}
+                                title="Sucres"
+                                result={nutritionData?.totalNutrients?.SUGAR?.quantity ?? 0}
+                                unit="kcal"
+                            />
+                            <NutritionalCard
+                                icon={Citrus}
+                                title="Vitamine C"
+                                result={nutritionData?.totalNutrients?.VITC?.quantity ?? 0}
+                                unit="mg"
+                            />
+                               </div>
+                    </div>
 
                     {/* Commentaire */}
                     <div className='m-6 lg:m-12'>

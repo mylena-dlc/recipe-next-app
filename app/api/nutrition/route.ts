@@ -21,8 +21,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Remplacez ces valeurs par vos propres clés API Edamam
-    // const app_id = '1906a19e';
-    // const app_key = '330f5c8d23c1374665ac71905a57af29';
+    const app_id = '1906a19e';
+    const app_key = '330f5c8d23c1374665ac71905a57af29';
 
     // Appel à l'API Edamam
     const response = await fetch(
