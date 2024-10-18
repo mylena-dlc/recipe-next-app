@@ -12,11 +12,10 @@ const NavBar: React.FC = () => {
         { title: 'Profil', url: '/profile' },
         { title: 'Tableau de bord', url: '/user' },
         { title: 'Admin Dashboard', url: '/admin', role: 'admin' },
-        // Add more placeholder links as needed
     ];
 
     const { session } = useSession();
-    const userRole = checkUserRole(session);
+    const userRole = session ? checkUserRole(session) : null;
 
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState<boolean>(false);
