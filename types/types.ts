@@ -13,7 +13,7 @@ interface RecipeIngredientType {
     id: string;
     quantity: number;
     unity: string;
-    ingredient: IngredientType; 
+    ingredient: IngredientType;
 }
 
 interface ToolType {
@@ -25,7 +25,7 @@ interface ToolType {
 interface RecipeToolType {
     id: string;
     quantity: number;
-    tool: ToolType; 
+    tool: ToolType;
 }
 
 interface Recipe {
@@ -70,12 +70,12 @@ interface TagType {
     id: string;
     name: string;
 }
- 
+
 interface TagArticleType {
     id: string;
     tag: TagType;
 }
- 
+
 interface ArticleWithTagsAndComments {
     id: string;
     title: string;
@@ -85,3 +85,4 @@ interface ArticleWithTagsAndComments {
     tags: TagArticleType[];
     comments: ArticleCommentType[];
 }
+

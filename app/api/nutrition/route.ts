@@ -20,9 +20,8 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Les données sont manquantes ou mal formatées', { status: 400 });
     }
 
-    // Remplacez ces valeurs par vos propres clés API Edamam
-    const app_id = '1906a19e';
-    const app_key = '330f5c8d23c1374665ac71905a57af29';
+    const app_id = process.env.EDAMAM_APP_ID;
+    const app_key = process.env.EDAMAM_APP_KEY;
 
     // Appel à l'API Edamam
     const response = await fetch(
@@ -33,18 +32,12 @@ export async function POST(req: NextRequest) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: title,        // Titre de la recette
-          ingr: ingredients,   // Liste des ingrédients envoyée dans le body
+          title: title,       
+          ingr: ingredients,  
         }),
       }
     );
 
-    // Vérification de la réussite de la requête vers l'API Edamam
-    // if (!response.ok) {
-    //   throw new Error('Erreur lors de la récupération des données nutritionnelles');
-    // }
-
-    // Récupération des données de réponse sous forme JSON
     const data = await response.json();
 
     // Renvoi des données nutritionnelles avec un statut 200
@@ -52,7 +45,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error("Erreur dans l'API nutrition:", error); 
-        // Gestion des erreurs et retour d'un statut 500
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

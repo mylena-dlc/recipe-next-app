@@ -17,6 +17,7 @@ import "jspdf-autotable";
 import { useUser } from '@clerk/nextjs';
 import translations from '@/lib/translations';
 import NutritionalCard from '@/components/NutritionalCard';
+import Chart from '@/components/Chart';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
@@ -26,6 +27,16 @@ import 'swiper/css/pagination';
 
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 
+interface NutritionDataProp {
+    calories?: number;
+    totalNutrients?: {
+        PROCNT?: { quantity: number };  
+        CHOCDF?: { quantity: number }; 
+        FAT?: { quantity: number };   
+        VITC?: { quantity: number };
+        SUGAR?: { quantity: number };
+    };
+}
 
 const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -34,8 +45,8 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const commentsCount = recipe ? recipe.comments.length : 0;
     const [isFavorite, setIsFavorite] = useState(false);
     const pageRef = useRef<HTMLDivElement>(null);
-    const { user } = useUser(); // Obtenez l'utilisateur connecté
-    const [nutritionData, setNutritionData] = useState(null); // pour stocker les données nutritionnelles
+    const { user } = useUser();
+    const [nutritionData, setNutritionData] = useState<NutritionDataProp | null>(null);
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -43,7 +54,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
             const data: Recipe = await response.json();
             setRecipe(data);
 
-            console.log("Détails de la recette chargés : ", data); // Vérifie que les détails de la recette sont bien récupérés
+            console.log("Détails de la recette chargés : ", data);
 
             // Récupérez les recettes de la même catégorie
             if (data.category && data.category.id) {
@@ -72,8 +83,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
 
     // Ce useEffect sera déclenché lorsque "recipe" sera défini
     useEffect(() => {
-        if (!recipe) return; // Si la recette n'est pas encore définie, ne fait rien
-
+        if (!recipe) return;
         console.log("Recette disponible, appel de getNutritionData...");
         getNutritionData();
     }, [recipe]); // Ce useEffect dépend de la valeur de "recipe"
@@ -84,7 +94,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
             return;
         }
         // Fonction de traduction des ingrédients
-        const translateIngredient = (ingredientName) => {
+        const translateIngredient = (ingredientName: string) => {
             return translations[ingredientName.toLowerCase()];
         };
 
@@ -124,7 +134,6 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
             setNutritionData(data);
         } catch (error) {
             console.error('Erreur dans getNutritionData:', error);
-            setNutritionError(error.message);
         }
     }
 
@@ -157,70 +166,71 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
             case 'entrée':
                 return '#D0838E';
             default:
-                return 'rgb(59 102 123)'; // couleur par défaut
+                return 'rgb(59 102 123)';
         }
     };
 
     const generatePDF = () => {
         if (!recipe) return;
 
-        const doc = new jsPDF();
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4',
+            putOnlyUsedFonts: true
+        });
 
         // Titre de la recette
         doc.setFontSize(20);
         doc.text(recipe.nameRecipe, 10, 30);
 
-        // Catégorie, durée de préparation, et difficulté
+        // Catégorie, durée de préparation, difficulté
         doc.setFontSize(12);
-        doc.text(`Catégorie: ${recipe.category.nameCategory}`, 10, 20);
-        doc.text(`Durée de préparation: ${recipe.preparationTime} minutes`, 10, 30);
-        doc.text(`Difficulté: ${recipe.difficulty}/5`, 10, 40);
+        doc.text(`Catégorie: ${recipe.category.nameCategory}`, 10, 50);
+        doc.text(`Durée de préparation: ${recipe.preparationTime} minutes`, 10, 60);
+        doc.text(`Difficulté: ${recipe.difficulty}/5`, 10, 70);
 
         // Ingrédients
-        const ingredients = recipe.ingredients.map((ingredient) => [
-            ingredient.ingredient.nameIngredient,
-            `${ingredient.quantity} ${ingredient.unity}`
-        ]);
-        doc.autoTable({
-            startY: 55,
-            head: [["Ingrédient", "Quantité"]],
-            body: ingredients,
-            headStyles: {
-                fillColor: [144, 139, 117],
-                textColor: [255, 255, 255],
-                halign: 'center'
-            }
+        let yPosition = 100;
+        doc.setFontSize(12);
+        doc.text("Ingrédients:", 10, yPosition);
+        yPosition += 10; // Ajouter un peu d'espace avant les ingrédients
+        recipe.ingredients.forEach((ingredient, index) => {
+            doc.setFontSize(12);
+            doc.text(`${ingredient.ingredient.nameIngredient}: ${ingredient.quantity} ${ingredient.unity}`, 10, yPosition);
+            yPosition += 10;
         });
 
         // Ustensiles
-        const tools = recipe.tools.map((tool) => [
-            tool.tool.nameTool,
-            tool.quantity || '1'
-        ]);
-        doc.autoTable({
-            startY: doc.lastAutoTable.finalY + 15,
-            head: [["Ustensile", "Quantité"]],
-            body: tools,
-            headStyles: {
-                fillColor: [144, 139, 117],
-                textColor: [255, 255, 255],
-                halign: 'center'
-            }
+        doc.setFontSize(12);
+        doc.text("Ustensiles:", 10, yPosition);
+        yPosition += 10;
+        recipe.tools.forEach((tool, index) => {
+            doc.setFontSize(12);
+            doc.text(`${tool.tool.nameTool}: ${tool.quantity || '1'}`, 10, yPosition);
+            yPosition += 10;
         });
 
         // Instructions
-        doc.text("Instructions:", 10, doc.lastAutoTable.finalY + 20);
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const margin = 10;
-        const maxLineWidth = pageWidth - margin * 2;
+        doc.setFontSize(12);
+        doc.text("Instructions:", 10, yPosition);
+        yPosition += 10;
         recipe.steps.forEach((step, index) => {
             const stepText = `${index + 1}. ${step.text}`;
-            // Scinder le texte en lignes pour respecter la largeur maximale
-            const splitText = doc.splitTextToSize(stepText, maxLineWidth);
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 10;
+            const maxLineWidth = pageWidth - margin * 2;
 
-            // Afficher le texte à partir de la position X=10 (gauche) et Y en fonction de l'index
-            doc.text(splitText, 10, doc.lastAutoTable.finalY + 30 + index * 10);
-        });
+            // Utilisation de splitTextToSize pour ne pas couper les mots
+            const splitText: string[] = doc.splitTextToSize(stepText, maxLineWidth);
+
+            // Afficher chaque ligne de l'instruction
+            splitText.forEach((line: string) => {
+                doc.text(line, margin, yPosition);
+                yPosition += 8; 
+            });
+            yPosition += 5; // Un peu d'espace après chaque instruction
+    });
 
         // Télécharger le PDF
         doc.save(`${recipe.nameRecipe}.pdf`);
@@ -402,44 +412,62 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                             icon={Leaf}
                             text="Valeurs Nutritionnelles"
                         />
-                        <div className='grid grid-cols-3 gap-4'>
-                            <NutritionalCard
-                                icon={Apple}
-                                title="Calories"
-                                result={nutritionData?.calories ?? 0}
-                                unit="kcal"
-                            />
-                            <NutritionalCard
-                                icon={Drumstick}
-                                title="Protéines"
-                                result={nutritionData?.totalNutrients?.PROCNT?.quantity ?? 0}
-                                unit="g"
-                            />
-                            <NutritionalCard
-                                icon={Wheat}
-                                title="Glucides"
-                                result={nutritionData?.totalNutrients?.CHOCDF?.quantity ?? 0}
-                                unit="g"
-                            />
-                            <NutritionalCard
-                                icon={Droplet}
-                                title="Lipides"
-                                result={nutritionData?.totalNutrients?.FAT?.quantity ?? 0}
-                                unit="g"
-                            />
-                            <NutritionalCard
-                                icon={Candy}
-                                title="Sucres"
-                                result={nutritionData?.totalNutrients?.SUGAR?.quantity ?? 0}
-                                unit="kcal"
-                            />
-                            <NutritionalCard
-                                icon={Citrus}
-                                title="Vitamine C"
-                                result={nutritionData?.totalNutrients?.VITC?.quantity ?? 0}
-                                unit="mg"
-                            />
-                               </div>
+                        {nutritionData ? (
+                            <div>
+                                <div className='grid grid-cols-3 gap-4'>
+                                    <NutritionalCard
+                                        icon={Apple}
+                                        title="Calories"
+                                        result={nutritionData?.calories ?? 0}
+                                        unit="kcal"
+                                    />
+                                    <NutritionalCard
+                                        icon={Drumstick}
+                                        title="Protéines"
+                                        result={nutritionData?.totalNutrients?.PROCNT?.quantity ?? 0}
+                                        unit="g"
+                                    />
+                                    <NutritionalCard
+                                        icon={Wheat}
+                                        title="Glucides"
+                                        result={nutritionData?.totalNutrients?.CHOCDF?.quantity ?? 0}
+                                        unit="g"
+                                    />
+                                    <NutritionalCard
+                                        icon={Droplet}
+                                        title="Lipides"
+                                        result={nutritionData?.totalNutrients?.FAT?.quantity ?? 0}
+                                        unit="g"
+                                    />
+                                    <NutritionalCard
+                                        icon={Candy}
+                                        title="Sucres"
+                                        result={nutritionData?.totalNutrients?.SUGAR?.quantity ?? 0}
+                                        unit="kcal"
+                                    />
+                                    <NutritionalCard
+                                        icon={Citrus}
+                                        title="Vitamine C"
+                                        result={nutritionData?.totalNutrients?.VITC?.quantity ?? 0}
+                                        unit="mg"
+                                    />
+                                </div>
+
+                                <div className='flex justify-center items-center my-8'>
+                                    <Chart
+                                        labels={["Protéines", "Glucides", "Lipides"]}
+                                        values={[
+                                            nutritionData?.totalNutrients?.PROCNT?.quantity ?? 0,
+                                            nutritionData?.totalNutrients?.CHOCDF?.quantity ?? 0,
+                                            nutritionData?.totalNutrients?.FAT?.quantity ?? 0
+                                        ]}
+                                    />
+
+                                </div>
+                            </div>
+                        ) : (
+                            <p>Chargement des données nutritionnelles...</p>
+                        )}
                     </div>
 
                     {/* Commentaire */}

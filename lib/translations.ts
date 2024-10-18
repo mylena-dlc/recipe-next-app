@@ -1,4 +1,4 @@
-const ingredientTranslations = {
+const ingredientTranslations: { [key: string]: string } = {
     "beurre": "butter",
     "farine": "flour",
     "sucre": "sugar",
