@@ -39,7 +39,7 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
     }, [params.articleId]);
 
     if (loading) {
-        return <div>Chargement de l'article...</div>;
+        return <div>Chargement de l&apos;article...</div>;
     }
 
     return (

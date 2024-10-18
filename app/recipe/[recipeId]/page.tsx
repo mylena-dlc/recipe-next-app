@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import SectionHeader from '@/components/SectionHeader';
 import Tag from '@/components/Tag';
 import Button from '@/components/Button';
@@ -88,7 +88,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
         getNutritionData();
     }, [recipe]); // Ce useEffect dépend de la valeur de "recipe"
 
-    const getNutritionData = async () => {
+    const getNutritionData = useCallback(async () => {
         if (!recipe) {
             console.log("Recette non chargée, impossible de récupérer les données nutritionnelles.");
             return;
@@ -135,7 +135,8 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
         } catch (error) {
             console.error('Erreur dans getNutritionData:', error);
         }
-    }
+    
+}, [recipe]);
 
     const handleFavoriteClick = () => {
         let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
