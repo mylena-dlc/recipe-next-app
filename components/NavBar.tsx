@@ -12,6 +12,7 @@ const NavBar: React.FC = () => {
         { title: 'Profil', url: '/profile' },
         { title: 'Tableau de bord', url: '/user' },
         { title: 'Admin Dashboard', url: '/admin', role: 'admin' },
+        { title: 'Planning', url: '/meal-plan' },
     ];
 
     const { session } = useSession();
@@ -89,19 +90,24 @@ const NavBar: React.FC = () => {
                 </li>
 
                 <SignedIn>
+                    <li className='p-5'>
+                        <Link className='cursor-pointer hover:underline' href="/meal-plan">
+                            Planning
+                        </Link>
+                    </li>
+
                     {links.map((link) =>
                         (link.role === 'admin' && userRole === 'admin') || !link.role ? (
                             <li key={link.title} className='p-5'>
-                                <Link  href={link.url} className='cursor-pointer hover:underline'>
+                                <Link href={link.url} className='cursor-pointer hover:underline'>
                                     {link.title}
                                 </Link>
                             </li>
-                            
+
                         ) : null
                     )}
                 </SignedIn>
 
-                {/* SignedOut Component */}
                 <SignedOut>
                     <a href='/sign-in'>
                         <button className='text-white bg-red-400 border-0 py-2 px-4 focus:outline-none hover:bg-red-500 rounded text-base mr-4'>
@@ -115,7 +121,6 @@ const NavBar: React.FC = () => {
                     </a>
                 </SignedOut>
 
-                {/* UserButton Component */}
                 <SignedIn>
                     <div className='ml-4'>
                         <UserButton afterSignOutUrl='/' />

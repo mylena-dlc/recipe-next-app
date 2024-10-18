@@ -1,0 +1,12 @@
+model MealPlanRecipe {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  recipeId String @db.ObjectId
+  recipe Recipe   @relation(fields: [recipeId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    mealPlanId String @db.ObjectId
+    mealPlan MealPlan @relation(fields: [mealPlanId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    @@index([mealPlanId])
+    @@index([recipeId])
+}

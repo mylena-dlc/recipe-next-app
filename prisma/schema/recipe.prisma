@@ -16,6 +16,7 @@ model Recipe {
     ingredients RecipeIngredient[]
     comments Comment[]
     steps Step[]
+    mealPlanRecipes MealPlanRecipe[]
 
     @@index([categoryId])
 

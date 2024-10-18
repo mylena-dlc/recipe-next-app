@@ -1,0 +1,5 @@
+model MealPeriod {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    name String  
+    mealPlans MealPlan[] @relation("MealPeriodToMealPlan")
+}

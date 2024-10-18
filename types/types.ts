@@ -86,3 +86,27 @@ interface ArticleWithTagsAndComments {
     comments: ArticleCommentType[];
 }
 
+interface MealPeriod {
+    id: string;
+    name: string;  
+    mealPlans: MealPlan[]; 
+}
+
+interface MealPlanRecipe {
+    id: string;
+    mealPlanId: string; 
+    recipeId: string;  
+    mealPeriodId: string;  
+    mealPlan: MealPlan;  
+    recipe: Recipe;      
+    mealPeriod: MealPeriod;  
+}
+
+interface MealPlan {
+    id: string;
+    date: Date;                
+    userId: string;              
+    mealPlanRecipes: MealPlanRecipe[];  
+    mealPeriodId: string;   
+    mealPeriod: MealPeriod;     
+}
