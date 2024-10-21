@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import { formatDate } from '@/lib/utils'
 
 
 const MealPlans = () => {
@@ -9,7 +10,7 @@ const MealPlans = () => {
 
   useEffect(() => {
     // Lorsque la session est chargée et l'utilisateur est connecté
-   
+
       const fetchMealPlans = async () => {
         const response = await fetch('/api/meal-plan');
         if (response.ok) {
@@ -29,17 +30,19 @@ const MealPlans = () => {
   }
 
   return (
-    <div>
-      <h1>Mes Plans de Repas</h1>
+    <div className='bg-white dark:bg-slate-600 rounded-md p-6'>
+       
+       <h1 className='text-3xl md:text-5xl pb-6'>Mes Plans de Repas</h1>
+
       {mealPlans.map((mealPlan) => (
         <div key={mealPlan.id} className="meal-plan">
-          <h2>{new Date(mealPlan.date).toLocaleDateString()}</h2> {/* Afficher la date du plan */}
+          <h2>{formatDate(mealPlan.date)}</h2> 
           <div className="meal-periods">
-            <h3>{mealPlan.mealPeriod.name}</h3> {/* Afficher la période du repas */}
+            <h3>{mealPlan.mealPeriod.name}</h3> 
             <ul>
               {mealPlan.mealPlanRecipes.map((mealPlanRecipe: any) => (
                 <li key={mealPlanRecipe.recipe.id}>
-                  {mealPlanRecipe.recipe.name} {/* Afficher le nom de la recette */}
+                  {mealPlanRecipe.recipe.nameRecipe} 
                 </li>
               ))}
             </ul>
