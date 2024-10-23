@@ -2,29 +2,44 @@ import React from 'react'
 import { formatDate } from '@/lib/utils'
 import Tag from './Tag'
 import { useRouter } from 'next/navigation'
-import { MessageSquareIcon, Trash2 } from 'lucide-react'
+import { Trash2, Croissant, Ham, EggFried, CookingPot, Clock } from 'lucide-react'
 import Link from 'next/link'
 import SectionHeader from '@/components/SectionHeader';
 import RecipeMealPlanCard from '@/components/RecipeMealPlanCard';
 
 
 interface MealPlanRecipeProps {
-  article: MealPlan
+  date: string;
+  mealPeriodName: string;
+  recipes: Recipe[];
 }
+
+const getIcon = (mealPeriodName: string) => {
+  switch (mealPeriodName) {
+    case 'Petit déjeuner':
+      return Croissant;
+    case 'Déjeuner':
+      return Ham;
+    case 'Dîner':
+      return EggFried;
+      default:
+      return CookingPot; 
+  }
+};
 
 const MealPlanCard = ({ date, mealPeriodName, recipes }: MealPlanRecipeProps) => {
 
   return (
-    <div className="group border p-10 rounded-md bg-white dark:bg-slate-800 dark:border-slate-800 dark:hover:bg-slate-700 cursor-pointer hover:translate-y-2 duration-300" key={article.id}>
+    <div className="group border p-10 rounded-md bg-white dark:bg-slate-800 dark:border-slate-800 dark:hover:bg-slate-700 cursor-pointer hover:translate-y-2 duration-300">
 
-        <h2 className="text-2xl md:text-xl font-bold">{date}</h2>
+        <h2 className="text-2xl md:text-xl font-bold mb-6">{date}</h2>
 
         <SectionHeader
-          icon={Trash2}
+          icon={getIcon(mealPeriodName)} 
           text={mealPeriodName}
         />
 
-        <div className="recipes mt-4">
+        <div className="recipes">
                 {recipes.length > 0 ? (
                   recipes.map((recipe) => (
                     <RecipeMealPlanCard 
@@ -35,7 +50,7 @@ const MealPlanCard = ({ date, mealPeriodName, recipes }: MealPlanRecipeProps) =>
                     />
                   ))
                 ) : (
-                  <p>Aucune recette pour cette période.</p>
+                  <p>Vous n'avez pas encore ajouté de recette.</p>
                 )}
               </div>
 
