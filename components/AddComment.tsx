@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 
-
-
 interface AddCommentProps {
     recipeId: string; 
 }
