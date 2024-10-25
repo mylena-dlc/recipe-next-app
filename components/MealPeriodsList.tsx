@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
-import MealPeriodCard from './MealPeriodCard'; // Assurez-vous que le chemin est correct
+import MealPeriodCard from './MealPeriodCard';
 
 interface MealPeriod {
   id: string;
   name: string;
 }
 
-const MealPeriodsList = () => {
+interface MealPeriodsListProps {
+  onSelect: (id: string) => void; // Fonction de sélection de la période
+}
+
+const MealPeriodsList = ({ onSelect }: MealPeriodsListProps) => {
   const [mealPeriods, setMealPeriods] = useState<MealPeriod[]>([]);
 
-  // Utiliser useEffect pour récupérer les données depuis l'API
   useEffect(() => {
     const fetchMealPeriods = async () => {
       try {
-        const response = await fetch('/api/meal-periods'); // Appelle votre route API
+        const response = await fetch('/api/mealperiod'); 
         if (response.ok) {
           const data = await response.json();
           setMealPeriods(data);
@@ -25,17 +28,17 @@ const MealPeriodsList = () => {
       }
     };
 
-    fetchMealPeriods(); // Appelle l'API lorsque le composant est monté
+    fetchMealPeriods(); 
   }, []);
-
-  if (!mealPeriods.length) {
-    return <p>Aucune période de repas trouvée.</p>; // Afficher un message si aucune période n'est trouvée
-  }
 
   return (
     <div className="meal-periods-container grid grid-cols-1 md:grid-cols-3 gap-4">
       {mealPeriods.map((mealPeriod) => (
-        <MealPeriodCard key={mealPeriod.id} mealPeriodName={mealPeriod.name} />
+        <MealPeriodCard 
+          key={mealPeriod.id} 
+          mealPeriodName={mealPeriod.name} 
+          onRecipesAdded={(recipes) => onSelect(mealPeriod.id, recipes)} 
+          />
       ))}
     </div>
   );

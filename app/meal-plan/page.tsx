@@ -27,7 +27,18 @@ const MealPlans = () => {
 
 
   if (!mealPlans.length) {
-    return <p>Vous n'avez pas encore créé de planning.</p>
+    return (
+      <div>
+          <p>Vous n'avez pas encore créé de planning.</p>
+          <Button
+            href="/meal-plan/add"
+            label="Ajouter un planning"
+            icon={<SquarePlus />}
+            className="bg-red-400 w-full md:w-40 flex-row-reverse justify-center pl-0 text-white mb-4"
+        />
+
+      </div>
+    )
   }
 
   return (
@@ -54,7 +65,7 @@ const MealPlans = () => {
             image: mealPlanRecipe.recipe.image,
           }))}  // Extraction des recettes du plan
         />
-      ))}
+      ))} 
     </div>
   );
 };
