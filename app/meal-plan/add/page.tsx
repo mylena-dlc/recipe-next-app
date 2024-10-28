@@ -100,32 +100,35 @@ const AddMealPlan = () => {
 
         {/* Affichage des périodes de repas */}
         <div className="mb-4">
-          <div className="flex">
+          <div className="flex justify-around">
             {mealPeriods.map((mealPeriod) => (
-              <div key={mealPeriod.id} className="flex">
-                <h2 className="m-8">{mealPeriod.name}</h2>
-
-                <button
-                  onClick={() => {
-                    setMealPeriodId(mealPeriod.id); // Définit l'ID de la période de repas sélectionnée
-                    setModalOpen(true); // Ouvre la modale
-                  }}
-                  type="button"
-                  className="bg-red-400 justify-center text-white"
-                >
-                  +
-                </button>
+              <div key={mealPeriod.id} className=" bg-slate-100 dark:bg-slate-800 p-4 mx-4 rounded-md">
+                <div className='flex items-center justify-around'>
+                  <h2 className="m-8">{mealPeriod.name}</h2>
+                  <button
+                    onClick={() => {
+                      setMealPeriodId(mealPeriod.id); // Définit l'ID de la période de repas sélectionnée
+                      setModalOpen(true); // Ouvre la modale
+                    }}
+                    type="button"
+                    className="bg-red-400 justify-center text-white h-12 w-12 rounded-md"
+                  >
+                    +
+                  </button>
+                </div>
 
                 {/* Affichage des recettes sélectionnées pour la période actuelle */}
                 <div className="mt-4">
+                {selectedRecipes[mealPeriod.id] && selectedRecipes[mealPeriod.id].length > 0 ? (
                   <ul>
                     {selectedRecipes[mealPeriod.id]?.map((recipe) => (
-                      <div key={recipe.id}>{recipe.name}</div>
+                      <div key={recipe.id} className='bg-slate-300 dark:bg-slate-800 p-2 my-2 rounded-md'>{recipe.name}</div>
                     ))}
                   </ul>
+                   ) : (
+                    <p className="text-gray-500 bg-slate-300 dark:bg-slate-800 p-2 rounded-md">Aucune recette sélectionnée</p>
+                  )}
                 </div>
-
-
               </div>
             ))}
           </div>
@@ -142,7 +145,7 @@ const AddMealPlan = () => {
 
         <button
           type="submit"
-          className="bg-red-400 w-full md:w-40 flex-row-reverse justify-center pl-0 text-white mb-4"
+          className="bg-red-400 justify-center text-white mb-4 rounded-md p-4"
         >
           Ajouter le planning
         </button>

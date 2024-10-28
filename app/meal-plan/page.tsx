@@ -32,14 +32,24 @@ const MealPlans = () => {
           <p>Vous n'avez pas encore créé de planning.</p>
           <Button
             href="/meal-plan/add"
-            label="Ajouter un planning"
+            label="Ajouter des recettes"
             icon={<SquarePlus />}
-            className="bg-red-400 w-full md:w-40 flex-row-reverse justify-center pl-0 text-white mb-4"
+            className="bg-red-400 flex-row-reverse justify-center pl-0 text-white mb-4"
         />
 
       </div>
     )
   }
+
+  // Regrouper les `mealPlans` par date
+  const groupedMealPlans = mealPlans.reduce((acc, mealPlan) => {
+    const date = formatDate(mealPlan.date);
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(mealPlan);
+    return acc;
+  }, {} as Record<string, MealPlan[]>);
 
   return (
     <div className='bg-white dark:bg-slate-600 rounded-md p-6'>
@@ -48,24 +58,34 @@ const MealPlans = () => {
 
         <Button
             href="/meal-plan/add"
-            label="Ajouter un planning"
+            label="Ajouter des recettes"
             icon={<SquarePlus />}
-            className="bg-red-400 w-full md:w-40 flex-row-reverse justify-center pl-0 text-white mb-4"
+            className="bg-red-400 flex-row-reverse justify-center pl-0 text-white mb-4"
         />
-
-      {mealPlans.map((mealPlan) => (
-        <MealPlanCard
-          key={mealPlan.id}
-          date={formatDate(mealPlan.date)}  // Formatage de la date
-          mealPeriodName={mealPlan.mealPeriod.name}  // Nom de la période de repas
-          recipes={mealPlan.mealPlanRecipes.map((mealPlanRecipe) => ({
-            id: mealPlanRecipe.recipe.id,
-            nameRecipe: mealPlanRecipe.recipe.nameRecipe,
-            preparationTime: mealPlanRecipe.recipe.preparationTime,
-            image: mealPlanRecipe.recipe.image,
-          }))}  // Extraction des recettes du plan
-        />
-      ))} 
+ <div className="">
+        {Object.keys(groupedMealPlans).map((date) => (
+          
+          <div key={date} className="space-y-4 ">
+            
+            <h2 className="text-2xl font-semibold my-8">{date}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {groupedMealPlans[date].map((mealPlan) => (
+                <MealPlanCard
+                  key={mealPlan.id}
+                  date={date}
+                  mealPeriodName={mealPlan.mealPeriod.name}
+                  recipes={mealPlan.mealPlanRecipes.map((mealPlanRecipe) => ({
+                    id: mealPlanRecipe.recipe.id,
+                    nameRecipe: mealPlanRecipe.recipe.nameRecipe,
+                    preparationTime: mealPlanRecipe.recipe.preparationTime,
+                    image: mealPlanRecipe.recipe.image,
+                  }))}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
