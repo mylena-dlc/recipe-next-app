@@ -25,6 +25,25 @@ const MealPlans = () => {
 
   }, [])
 
+  // Fonction de suppression d'un planning
+
+
+  const handleDelete = async (mealplanId: string) => {
+
+    const confirmDelete = window.confirm('Etes vous sûr de vouloir supprimer ce planning?');
+    if (!confirmDelete) return;
+
+    try {
+        await fetch(`/api/meal-plan/${mealplanId}/delete`, {
+            method: 'DELETE'
+        })
+        // router.push('/comment')
+        location.reload();
+    } catch (error) {
+        console.error('Error deleting meal plan')
+    }
+}
+
 
   if (!mealPlans.length) {
     return (
@@ -80,6 +99,8 @@ const MealPlans = () => {
                     preparationTime: mealPlanRecipe.recipe.preparationTime,
                     image: mealPlanRecipe.recipe.image,
                   }))}
+                  onDelete={() => handleDelete(mealPlan.id)} // Passer `onDelete` au composant
+
                 />
               ))}
             </div>

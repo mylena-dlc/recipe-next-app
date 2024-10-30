@@ -11,6 +11,8 @@ import RecipeMealPlanCard from '@/components/RecipeMealPlanCard';
 interface MealPlanRecipeProps {
   mealPeriodName: string;
   recipes: Recipe[];
+  onDelete: () => void; // Fonction de suppression en prop
+
 }
 
 const getIcon = (mealPeriodName: string) => {
@@ -26,10 +28,14 @@ const getIcon = (mealPeriodName: string) => {
   }
 };
 
-const MealPlanCard = ({ mealPeriodName, recipes }: MealPlanRecipeProps) => {
+const MealPlanCard = ({ mealPeriodName, recipes, onDelete }: MealPlanRecipeProps) => {
 
   return (
-    <div className="group border p-10 rounded-md bg-white dark:bg-slate-800 dark:border-slate-800 dark:hover:bg-slate-700">
+    <div className="relative group border p-10 rounded-md bg-white dark:bg-slate-800 dark:border-slate-800 dark:hover:bg-slate-700">
+        <button onClick={onDelete} className="bg-red-400 text-white flex items-center p-2 rounded-md cursor-pointer absolute top-2 right-2">
+          <Trash2 /> 
+        </button>
+        
         <SectionHeader
           icon={getIcon(mealPeriodName)} 
           text={mealPeriodName}
@@ -49,8 +55,6 @@ const MealPlanCard = ({ mealPeriodName, recipes }: MealPlanRecipeProps) => {
                   <p>Vous n'avez pas encore ajouté de recette.</p>
                 )}
               </div>
-
-
     </div>
   )
 }
