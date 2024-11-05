@@ -19,14 +19,20 @@ export async function GET() {
     const mealPlans = await db.mealPlan.findMany({
       where: {
         userId: user.id, 
+        date: {
+          gte: new Date(), // Compare directement avec la date actuelle
+        },
       },
       include: {
-        mealPeriod: true, // Inclure le mealPeriod (petit-déjeuner, déjeuner, dîner)
+        mealPeriod: true, 
         mealPlanRecipes: {
           include: {
-            recipe: true, // Inclure les recettes associées à chaque MealPlanRecipe
+            recipe: true, 
           },
         },
+      },
+      orderBy: {
+        date: 'asc', 
       },
     })
     return NextResponse.json(mealPlans)

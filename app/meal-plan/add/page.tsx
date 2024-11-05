@@ -37,15 +37,26 @@ const AddMealPlan = () => {
     fetchMealPeriods();
   }, []);
 
-  // Fonction addRecipes pour ajouter les recettes sélectionnées à la période actuelle
+  // Fonction pour ajouter les recettes sélectionnées à la période actuelle
   const addRecipes = (newRecipes: { id: string; name: string }[]) => {
-    setSelectedRecipes((prev) => ({
-      ...prev,
-      [mealPeriodId]: [...(prev[mealPeriodId] || []), ...newRecipes], // Ajoute les nouvelles recettes à l'état de la période actuelle
-    }));
-    setModalOpen(false); // Ferme la modale après ajout des recettes
+    setSelectedRecipes((prev) => {
+      // Récupération des recettes actuelles
+      const currentRecipes = prev[mealPeriodId] || [];
+      
+      // Filtre pour éviter les doublons
+      const filteredRecipes = newRecipes.filter(
+        newRecipe => !currentRecipes.some(recipe => recipe.id === newRecipe.id)
+      );
+  
+      return {
+        ...prev, // Copie l'état précédent
+        [mealPeriodId]: [...currentRecipes, ...filteredRecipes], // Ajoute les nouvelles recettes
+      };
+    });
+    
+    setModalOpen(false); 
   };
-
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +66,6 @@ const AddMealPlan = () => {
       recipes: selectedRecipes[mealPeriodId].map(recipe => recipe.id), // Passer uniquement les IDs
     }));
 
-    console.log('Données envoyées:', { date, mealPlans }); // Ajoutez cette ligne pour déboguer
 
     try {
       const response = await fetch('/api/meal-plan/add', {
@@ -83,9 +93,9 @@ const AddMealPlan = () => {
   return (
     <div className="container mx-auto mt-10">
       <h1 className="text-3xl font-bold mb-6">Créer un nouveau planning</h1>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-md shadow-md">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-transparent p-6 rounded-md shadow-md">
         <div className="mb-4">
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="date" className="block font-medium">
             Date
           </label>
           <input
@@ -93,16 +103,16 @@ const AddMealPlan = () => {
             id="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="mt-1 p-2 block w-full border rounded-md shadow-sm"
+            className="mt-1 p-2 block w-full border rounded-md shadow-sm dark:text-slate-500"
             required
           />
         </div>
 
         {/* Affichage des périodes de repas */}
         <div className="mb-4">
-          <div className="flex justify-around">
+          <div className="flex justify-between">
             {mealPeriods.map((mealPeriod) => (
-              <div key={mealPeriod.id} className=" bg-slate-100 dark:bg-slate-800 p-4 mx-4 rounded-md">
+              <div key={mealPeriod.id} className="bg-slate-100 dark:bg-slate-800 p-4 rounded-md">
                 <div className='flex items-center justify-around'>
                   <h2 className="m-8">{mealPeriod.name}</h2>
                   <button
@@ -142,16 +152,12 @@ const AddMealPlan = () => {
           />
         )}
 
-
         <button
           type="submit"
           className="bg-red-400 justify-center text-white mb-4 rounded-md p-4"
         >
           Ajouter le planning
         </button>
-
-
-
       </form>
     </div>
   );

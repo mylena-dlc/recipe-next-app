@@ -5,7 +5,7 @@ interface RecipeModalProps {
   onClose: () => void;
   onSubmit: (selectedRecipes: { id: string; name: string }[]) => void; // Mettre à jour le type ici
 }
-const RecipeModal: React.FC<RecipeModalProps> = ({ onClose, onSubmit  }) => {
+const RecipeModal: React.FC<RecipeModalProps> = ({ onClose, onSubmit }) => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<string[]>([]); // État pour les recettes sélectionnées
 
@@ -40,15 +40,16 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ onClose, onSubmit  }) => {
   const handleAddRecipes = () => {
     const newSelectedRecipes = recipes.filter(recipe => selectedRecipes.includes(recipe.id)).map(recipe => ({
       id: recipe.id,
-      name: recipe.nameRecipe // Ajoute le nom de la recette
+      name: recipe.nameRecipe
     }));
 
     onSubmit(newSelectedRecipes); // Appelle la fonction de soumission avec les recettes sélectionnées
     onClose(); // Ferme la modale
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg w-full max-w-md">
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-lg w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Sélectionner les recettes</h2>
         <div className="max-h-64 overflow-y-scroll mb-4">
           {recipes.map((recipe) => (
@@ -58,33 +59,29 @@ const RecipeModal: React.FC<RecipeModalProps> = ({ onClose, onSubmit  }) => {
                 className="mr-2"
                 checked={selectedRecipes.includes(recipe.id)} // Coche la case si la recette est sélectionnée
                 onChange={() => toggleRecipeSelection(recipe.id)} // Gère le changement de sélection
-
               />
               <label>{recipe.nameRecipe}</label>
             </div>
           ))}
         </div>
-        
+
         <div className="flex justify-between">
-
-
-                 {/* Bouton Annuler */}
-            <button
+          {/* Bouton Annuler */}
+          <button
             onClick={onClose}
-            className="bg-red-400 text-white py-2 px-4 rounded-md"
+            className="bg-red-400 w-full md:w-40 flex-row-reverse justify-center pl-0 text-white mb-4 py-2 rounded-md"
           >
             Annuler
           </button>
+
           {/* Bouton Ajouter */}
           <button
             type="button"
             className="bg-red-400 w-full md:w-40 flex-row-reverse justify-center pl-0 text-white mb-4 py-2 rounded-md"
-            onClick={handleAddRecipes} // Appelle la fonction pour ajouter les recettes
-
+            onClick={handleAddRecipes} 
           >
             Ajouter
           </button>
-
         </div>
       </div>
     </div>
