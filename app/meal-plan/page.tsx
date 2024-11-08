@@ -45,7 +45,7 @@ const MealPlans = () => {
   if (!mealPlans.length) {
     return (
       <div>
-        <p>Vous n'avez pas encore créé de planning.</p>
+        <p>Vous n&apos;avez pas encore créé de planning.</p>
         <Button
           href="/meal-plan/add"
           label="Ajouter des recettes"

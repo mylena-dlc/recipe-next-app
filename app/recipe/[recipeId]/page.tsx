@@ -48,6 +48,17 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
     const { user } = useUser();
     const [nutritionData, setNutritionData] = useState<NutritionDataProp | null>(null);
 
+    const getNutritionData = useCallback(async () => {
+        if (!recipe) {
+            console.log("Recette non chargée, impossible de récupérer les données nutritionnelles.");
+            return;
+        }
+        // Fonction de traduction des ingrédients
+        const translateIngredient = (ingredientName: string) => {
+            return translations[ingredientName.toLowerCase()];
+        };
+        
+
     useEffect(() => {
         const fetchRecipe = async () => {
             const response = await fetch(`/api/recipe/${params.recipeId}`);
@@ -82,22 +93,14 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
         fetchRecipe();
     }, [params.recipeId]);
 
-    // Ce useEffect sera déclenché lorsque "recipe" sera défini
-    useEffect(() => {
-        if (!recipe) return;
-        console.log("Recette disponible, appel de getNutritionData...");
-        getNutritionData();
-    }, [recipe]); // Ce useEffect dépend de la valeur de "recipe"
+        // Ce useEffect sera déclenché lorsque "recipe" sera défini
+        useEffect(() => {
+            if (!recipe) return;
+            console.log("Recette disponible, appel de getNutritionData...");
+            getNutritionData();
+        }, [recipe, getNutritionData]); // Ce useEffect dépend de la valeur de "recipe"
 
-    const getNutritionData = useCallback(async () => {
-        if (!recipe) {
-            console.log("Recette non chargée, impossible de récupérer les données nutritionnelles.");
-            return;
-        }
-        // Fonction de traduction des ingrédients
-        const translateIngredient = (ingredientName: string) => {
-            return translations[ingredientName.toLowerCase()];
-        };
+
 
         const recipeData = {
             title: recipe.nameRecipe,

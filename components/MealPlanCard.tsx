@@ -51,7 +51,7 @@ const MealPlanCard = ({ mealPeriodName, recipes, onDelete }: MealPlanRecipeProps
                     />
                   ))
                 ) : (
-                  <p>Vous n'avez pas encore ajouté de recette.</p>
+                  <p>Vous n&apos;avez pas encore ajouté de recette.</p>
                 )}
               </div>
     </div>
