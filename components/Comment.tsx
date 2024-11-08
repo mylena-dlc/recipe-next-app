@@ -2,7 +2,6 @@ import React from 'react'
 import { formatDate } from '@/lib/utils'
 import { Trash2 } from 'lucide-react'
 
-
 interface CommentProps {
     comment: CommentType
 }
@@ -11,7 +10,7 @@ const Comment = ({ comment }: CommentProps) => {
 
     const handleDelete = async () => {
 
-        const confirmDelete = window.confirm('Are you sure you want to delete this comment?');
+        const confirmDelete = window.confirm('Êtes vous sûr de vouloir supprimer ce commentaire?');
         if (!confirmDelete) return;
 
         try {
@@ -21,7 +20,7 @@ const Comment = ({ comment }: CommentProps) => {
             // router.push('/comment')
             location.reload();
         } catch (error) {
-            console.error('Error deleting comment')
+            console.error('Erreur lors de la suppression du commentaire')
         }
     }
 
@@ -34,7 +33,7 @@ const Comment = ({ comment }: CommentProps) => {
             </div>
 
             <div className='sm:top-5 sm:right-5 self-center'>
-                <button onClick={handleDelete} className="text-white flex gap-2 p-2 rounded-md bg-red-500 hover:bg-red-600 text-xs"><Trash2 size={15} />Delete</button>
+                <button onClick={handleDelete} className="text-white flex gap-2 p-2 rounded-md bg-red-500 hover:bg-red-600 text-xs"><Trash2 /></button>
             </div>
 
         </div>

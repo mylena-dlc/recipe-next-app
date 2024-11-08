@@ -1,8 +1,15 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { currentUser } from '@clerk/nextjs/server';
 
 export async function POST(req: Request) {
     try {
+        // Récupère l'utilisateur connecté avec Clerk
+        const user = await currentUser();
+        if (!user) {
+            return new NextResponse("Utilisateur non identifié", { status: 401 });
+        }
+
         const { text, recipeId } = await req.json();
 
         if (!text || !recipeId) {
@@ -13,7 +20,7 @@ export async function POST(req: Request) {
             data: {
                 text,
                 recipeId,  // Associe le commentaire à une recette
-                userId: "userId",  
+                userId: user.id,  
             }
         });
 

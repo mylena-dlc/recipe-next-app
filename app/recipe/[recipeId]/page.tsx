@@ -58,8 +58,8 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
 
             // Récupérez les recettes de la même catégorie
             if (data.category && data.category.id) {
-                const categoryResponse = await fetch(`/api/recipe/category/${data.category.id}`);
-                if (!categoryResponse.ok) throw new Error('Category recipes not found');
+                const categoryResponse = await fetch(`/api/category/${data.category.id}`);
+                if (!categoryResponse.ok) throw new Error('Erreur; catégorie non trouvée');
 
                 const categoryRecipes: Recipe[] = await categoryResponse.json();
 
@@ -73,6 +73,7 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
 
                 setRelatedRecipes(randomRecipes);
             };
+
             // Vérifier si la recette est déjà dans les favoris
             const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
             const isFav = favorites.some((fav: any) => fav.id === data.id);
@@ -298,8 +299,8 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
                     </div>
 
                     {/* Deuxième section */}
-                    <div className='m-6 lg:m-12 flex'>
-                        <div className='w-1/2'>
+                    <div className='m-6 lg:m-12 flex flex-col lg:flex-row'>
+                        <div className='w-full lg:w-1/2 p-2'>
                             <SectionHeader
                                 icon={ListChecks}
                                 text="Instructions"

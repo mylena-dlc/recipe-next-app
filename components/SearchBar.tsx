@@ -19,7 +19,7 @@ export default function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex items-center">
+    <form onSubmit={handleSearch} className="flex items-center relative">
       <input
         type="text"
         value={query}
@@ -27,8 +27,8 @@ export default function SearchBar() {
         placeholder="Rechercher..."
         className="p-1 rounded-md text-slate-500 dark:color-white bg-gray-100"
       />
-      <button type="submit" className=" p-2 text-slate-500  dark:text-white rounded-md">
-        <Search />
+      <button type="submit" className="p-2 dark:text-white rounded-md abolute right-0">
+        <Search className="dark:text-gray-800"/>
       </button>
     </form>
   );

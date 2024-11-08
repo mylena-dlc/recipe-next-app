@@ -5,7 +5,10 @@ const ingredientTranslations: { [key: string]: string } = {
     "oeuf": "egg",
     "mascarpone": "mascarpone",
     "fraise": "strawberry",
-    "citron": "lemon"
+    "citron": "lemon",
+    "viande hachée": "minced meat ",
+    "lait": "milk",
+    "emmental": "emmental"
 };
 
 export default ingredientTranslations;

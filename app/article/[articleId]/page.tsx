@@ -88,7 +88,6 @@ const ArticleDetailPage = ({ params }: { params: { articleId: string } }) => {
                             <p >Veuillez vous connecter pour ajouter un commentaire.</p>
                         </div>
                     )}
-
                 </div>
             )}
         </div>

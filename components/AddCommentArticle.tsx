@@ -21,7 +21,7 @@ const AddCommentArticle: React.FC<AddCommentArticleProps> = ({ articleId }) => {
         }
 
         try {
-            const res = await fetch(`/api/commentArticle`, {
+            const res = await fetch(`/api/articleComment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

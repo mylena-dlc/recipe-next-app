@@ -45,6 +45,13 @@ interface Recipe {
     comments: CommentType[];
 }
 
+interface SimplifiedRecipe {
+    id: string;
+    nameRecipe: string;
+    image: string;
+    preparationTime: number;
+}
+
 interface StepType {
     id: string;
     number: number;

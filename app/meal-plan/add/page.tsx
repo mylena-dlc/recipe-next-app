@@ -110,9 +110,9 @@ const AddMealPlan = () => {
 
         {/* Affichage des périodes de repas */}
         <div className="mb-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-wrap">
             {mealPeriods.map((mealPeriod) => (
-              <div key={mealPeriod.id} className="bg-slate-100 dark:bg-slate-800 p-4 rounded-md">
+              <div key={mealPeriod.id} className="bg-slate-100 dark:bg-slate-800 p-4 rounded-md my-4">
                 <div className='flex items-center justify-around'>
                   <h2 className="m-8">{mealPeriod.name}</h2>
                   <button

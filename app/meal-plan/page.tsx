@@ -50,7 +50,7 @@ const MealPlans = () => {
           href="/meal-plan/add"
           label="Ajouter des recettes"
           icon={<SquarePlus />}
-          className="bg-red-400 flex-row-reverse justify-center pl-0 text-white mb-4"
+          className="bg-red-400 flex-row-reverse justify-center pl-0 text-white mb-4 w-full"
         />
       </div>
     )
@@ -78,7 +78,7 @@ const groupedMealPlans = mealPlans.reduce((acc, mealPlan) => {
         href="/meal-plan/add"
         label="Ajouter des recettes"
         icon={<SquarePlus />}
-        className="bg-red-400 flex-row-reverse justify-center pl-0 text-white mb-4"
+        className="bg-red-400 flex-row-reverse justify-center pl-0 text-white mb-4 w-full "
       />
       <div className="">
         {Object.keys(groupedMealPlans).map((date) => (
@@ -104,7 +104,7 @@ const groupedMealPlans = mealPlans.reduce((acc, mealPlan) => {
                       preparationTime: mealPlanRecipe.recipe.preparationTime,
                       image: mealPlanRecipe.recipe.image,
                     }))}
-                    onDelete={() => handleDelete(mealPlan.id)} // Passer onDelete au composant
+                    onDelete={() => handleDelete(mealPlan.id)} 
                   />
                 ))}
               </div>

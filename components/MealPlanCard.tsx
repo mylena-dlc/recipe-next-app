@@ -10,9 +10,8 @@ import RecipeMealPlanCard from '@/components/RecipeMealPlanCard';
 
 interface MealPlanRecipeProps {
   mealPeriodName: string;
-  recipes: Recipe[];
+  recipes: SimplifiedRecipe[];
   onDelete: () => void; // Fonction de suppression en prop
-
 }
 
 const getIcon = (mealPeriodName: string) => {
