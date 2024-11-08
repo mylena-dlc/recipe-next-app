@@ -57,6 +57,22 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
         const translateIngredient = (ingredientName: string) => {
             return translations[ingredientName.toLowerCase()];
         };
+
+        const recipeData = {
+            title: recipe.nameRecipe,
+            ingredients: recipe.ingredients.map((ingredient) => {
+                // Traduction des ingrédients en anglais
+                const translatedIngredient = translateIngredient(ingredient.ingredient.nameIngredient);
+
+                // Si la traduction n'est pas trouvée, on retourne null
+                if (!translatedIngredient) return null;
+
+                // Formatage de l'ingrédient uniquement si la traduction est valide
+                return `${ingredient.quantity}${ingredient.unity === "gr" ? "g" : ingredient.unity} ${translatedIngredient}`;
+            })
+                // On filtre les ingrédients pour exclure ceux qui sont null
+                .filter(Boolean) // Ceci élimine les valeurs null
+        };
         
 
     useEffect(() => {
@@ -93,30 +109,14 @@ const RecipeDetailPage = ({ params }: { params: { recipeId: string } }) => {
         fetchRecipe();
     }, [params.recipeId]);
 
-        // Ce useEffect sera déclenché lorsque "recipe" sera défini
-        useEffect(() => {
-            if (!recipe) return;
-            console.log("Recette disponible, appel de getNutritionData...");
-            getNutritionData();
-        }, [recipe, getNutritionData]); // Ce useEffect dépend de la valeur de "recipe"
+    // Ce useEffect sera déclenché lorsque "recipe" sera défini
+    useEffect(() => {
+        if (!recipe) return;
+        console.log("Recette disponible, appel de getNutritionData...");
+        getNutritionData();
+    }, [recipe, getNutritionData]); // Ce useEffect dépend de la valeur de "recipe"
 
-
-
-        const recipeData = {
-            title: recipe.nameRecipe,
-            ingredients: recipe.ingredients.map((ingredient) => {
-                // Traduction des ingrédients en anglais
-                const translatedIngredient = translateIngredient(ingredient.ingredient.nameIngredient);
-
-                // Si la traduction n'est pas trouvée, on retourne null
-                if (!translatedIngredient) return null;
-
-                // Formatage de l'ingrédient uniquement si la traduction est valide
-                return `${ingredient.quantity}${ingredient.unity === "gr" ? "g" : ingredient.unity} ${translatedIngredient}`;
-            })
-                // On filtre les ingrédients pour exclure ceux qui sont null
-                .filter(Boolean) // Ceci élimine les valeurs null
-        };
+   
 
         console.log("Données à envoyer:", recipeData);
 
